@@ -1,8 +1,8 @@
-import 'package:fl_clash/xboard/sdk/xboard_sdk.dart';
+import 'package:mitveepn/xboard/sdk/xboard_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/xboard/features/invite/providers/invite_provider.dart';
+import 'package:mitveepn/common/common.dart';
+import 'package:mitveepn/xboard/features/invite/providers/invite_provider.dart';
 
 class CommissionHistoryDialog extends ConsumerStatefulWidget {
   const CommissionHistoryDialog({super.key});

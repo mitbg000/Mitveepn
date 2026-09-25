@@ -1,9 +1,9 @@
-import 'package:fl_clash/widgets/widgets.dart';
+import 'package:mitveepn/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:fl_clash/xboard/sdk/xboard_sdk.dart';
+import 'package:mitveepn/xboard/sdk/xboard_sdk.dart';
 class PaymentGatewayPage extends ConsumerStatefulWidget {
   final String paymentUrl;
   final String tradeNo;

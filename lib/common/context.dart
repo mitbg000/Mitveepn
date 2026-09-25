@@ -1,5 +1,5 @@
-import 'package:fl_clash/manager/message_manager.dart';
-import 'package:fl_clash/widgets/scaffold.dart';
+import 'package:mitveepn/manager/message_manager.dart';
+import 'package:mitveepn/widgets/scaffold.dart';
 import 'package:flutter/material.dart';
 
 extension BuildContextExtension on BuildContext {

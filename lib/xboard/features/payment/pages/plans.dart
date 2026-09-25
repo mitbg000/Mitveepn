@@ -1,18 +1,19 @@
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/l10n/l10n.dart';
-import 'package:fl_clash/xboard/sdk/xboard_sdk.dart';
-import 'package:fl_clash/xboard/features/auth/providers/xboard_user_provider.dart';
-import 'package:fl_clash/xboard/features/subscription/providers/xboard_subscription_provider.dart';
+import 'package:mitveepn/common/common.dart';
+import 'package:mitveepn/xboard/sdk/xboard_sdk.dart';
+import 'package:mitveepn/xboard/features/auth/providers/xboard_user_provider.dart';
+import 'package:mitveepn/xboard/features/subscription/providers/xboard_subscription_provider.dart';
+import 'package:mitveepn/xboard/features/payment/providers/selected_plan_provider.dart';
 import 'plan_purchase_page.dart';
-import '../widgets/plan_description_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 class PlansView extends ConsumerStatefulWidget {
   const PlansView({super.key});
   @override
   ConsumerState<PlansView> createState() => _PlansViewState();
 }
-class _PlansViewState extends ConsumerState<PlansView> {
+
+class _PlansViewState extends ConsumerState<PlansView> with PageMixin {
   @override
   void initState() {
     super.initState();
@@ -52,136 +53,170 @@ class _PlansViewState extends ConsumerState<PlansView> {
     // 直接使用PlanData模型中的formattedSpeedLimit方法
     return plan.speedLimit;
   }
-  Widget _buildPlanCard(PlanData plan) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final isDesktop = screenWidth > 768;
-    return Card(
-      margin: isDesktop 
-        ? EdgeInsets.zero 
+  Widget _buildPlanCard(PlanData plan, {required bool isDesktop}) {
+    final textTheme = context.textTheme;
+
+    return Container(
+      margin: isDesktop
+        ? EdgeInsets.zero
         : const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      child: IntrinsicHeight(
-        child: Padding(
-        padding: EdgeInsets.all(isDesktop ? 12 : 16),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF6FCF97), Color(0xFF4DB8A0)],
+        ),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Text(
-                    plan.name,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                if (plan.hasPrice)
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [Colors.blue.shade400, Colors.blue.shade600],
-                      ),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Text(
-                      _getLowestPrice(plan),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-              ],
+            Text(
+              plan.name.toUpperCase(),
+              style: textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+                letterSpacing: 1.0,
+              ),
+              overflow: TextOverflow.ellipsis,
             ),
-            SizedBox(height: isDesktop ? 8 : 12),
-            Row(
+            const SizedBox(height: 12),
+            Wrap(
+              crossAxisAlignment: WrapCrossAlignment.end,
+              spacing: 6,
               children: [
-                Icon(Icons.data_usage, size: 16, color: Colors.grey.shade600),
-                const SizedBox(width: 4),
                 Text(
-                  '${AppLocalizations.of(context).xboardTraffic}: ${_formatTraffic(plan.transferEnable)}',
-                  style: TextStyle(color: Colors.grey.shade600),
+                  '¥',
+                  style: textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                  ),
                 ),
-                const SizedBox(width: 16),
-                Icon(Icons.speed, size: 16, color: Colors.grey.shade600),
-                const SizedBox(width: 4),
                 Text(
-                  '${AppLocalizations.of(context).xboardSpeedLimit}: ${_getSpeedLimitText(plan)}',
-                  style: TextStyle(color: Colors.grey.shade600),
+                  _getLowestPrice(plan).replaceAll('¥', ''),
+                  style: textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                    height: 1.0,
+                  ),
+                ),
+                Text(
+                  appLocalizations.xboardPerMonth,
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ],
             ),
-            if (plan.content != null) ...[
-              SizedBox(height: isDesktop ? 8 : 12),
-              PlanDescriptionWidget(content: plan.content!),
-            ],
-            SizedBox(height: isDesktop ? 12 : 20),
-            if (plan.hasPrice)
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: () => _navigateToPurchase(plan),
-                  icon: const Icon(Icons.shopping_cart),
-                  label: Text(appLocalizations.xboardBuyNow),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                    foregroundColor: Colors.white,
-                    padding: EdgeInsets.symmetric(vertical: isDesktop ? 8 : 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
+            const SizedBox(height: 20),
+            _buildFeatureRow(
+              Icons.data_usage_rounded,
+              _formatTraffic(plan.transferEnable),
+              textTheme,
+            ),
+            const SizedBox(height: 10),
+            if (_getSpeedLimitText(plan) != null)
+              _buildFeatureRow(
+                Icons.speed_rounded,
+                '${_getSpeedLimitText(plan)} ${appLocalizations.xboardMbps}',
+                textTheme,
+              ),
+            if (_getSpeedLimitText(plan) != null)
+              const SizedBox(height: 10),
+            _buildFeatureRow(
+              Icons.devices_rounded,
+              plan.deviceLimit != null && plan.deviceLimit! > 0
+                  ? '${plan.deviceLimit} ${appLocalizations.xboardDevices}'
+                  : appLocalizations.xboardUnlimited,
+              textTheme,
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: plan.hasPrice ? () => _navigateToPurchase(plan) : null,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF1E2A3A),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 0,
+                ),
+                child: Text(
+                  appLocalizations.xboardSelectAPlan,
+                  style: textTheme.titleSmall?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
+            ),
           ],
-        ),
         ),
       ),
     );
   }
+
+  Widget _buildFeatureRow(IconData icon, String text, TextTheme textTheme) {
+    return Row(
+      children: [
+        Icon(icon, size: 18, color: Colors.white),
+        const SizedBox(width: 10),
+        Flexible(
+          child: Text(
+            text,
+            style: textTheme.bodyMedium?.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.w500,
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
+    );
+  }
   void _navigateToPurchase(PlanData plan) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => PlanPurchasePage(plan: plan),
+    // Set selected plan in provider
+    ref.read(selectedPlanProvider.notifier).state = plan;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Dialog.fullscreen(
+        child: PlanPurchasePage(),
       ),
     );
   }
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final isDesktop = screenWidth > 768;
-    return Scaffold(
-      appBar: isDesktop ? null : AppBar(
-        title: Text(appLocalizations.xboardPlanInfo),
-      ),
-      body: RefreshIndicator(
-        onRefresh: _refreshPlans,
-        child: Consumer(
-          builder: (context, ref, child) {
-            final plans = ref.watch(xboardSubscriptionProvider);
-            final uiState = ref.watch(userUIStateProvider);
-            if (uiState.isLoading) {
-              return const Center(child: CircularProgressIndicator());
-            }
-            if (uiState.errorMessage != null) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.error_outline,
-                      size: 64,
-                      color: Colors.red,
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      '加载失败',
-                      style: TextStyle(
+    return RefreshIndicator(
+      onRefresh: _refreshPlans,
+      child: Consumer(
+        builder: (context, ref, child) {
+          final plans = ref.watch(xboardSubscriptionProvider);
+          final uiState = ref.watch(userUIStateProvider);
+          if (uiState.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (uiState.errorMessage != null) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.error_outline,
+                    size: 64,
+                    color: Colors.red,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    appLocalizations.xboardLoadFailed,
+                    style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                         color: Colors.red.shade700,
@@ -203,19 +238,19 @@ class _PlansViewState extends ConsumerState<PlansView> {
               );
             }
             if (plans.isEmpty) {
-              return const Center(
+              return Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.inbox_outlined,
                       size: 64,
                       color: Colors.grey,
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     Text(
-                      '暂无套餐信息',
-                      style: TextStyle(
+                      appLocalizations.xboardNoPlansAvailable,
+                      style: const TextStyle(
                         fontSize: 18,
                         color: Colors.grey,
                       ),
@@ -224,33 +259,52 @@ class _PlansViewState extends ConsumerState<PlansView> {
                 ),
               );
             }
-            final screenWidth = MediaQuery.of(context).size.width;
-            final isDesktop = screenWidth > 768;
-            if (isDesktop) {
-              return SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
-                child: Wrap(
-                  spacing: 16,
-                  runSpacing: 16,
-                  children: plans.map((plan) {
-                    return SizedBox(
-                      width: 350, // 固定宽度
-                      child: _buildPlanCard(plan),
-                    );
-                  }).toList(),
-                ),
-              );
-            } else {
-              return ListView.builder(
-                itemCount: plans.length,
-                itemBuilder: (context, index) {
-                  return _buildPlanCard(plans[index]);
-                },
-              );
-            }
+
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    appLocalizations.xboardSelectAPlan,
+                    style: context.textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      const cardsPerRow = 3;
+                      const spacing = 24.0;
+                      final isWide = constraints.maxWidth > 700;
+                      if (!isWide) {
+                        return Column(
+                          children: plans
+                              .map((plan) => _buildPlanCard(plan, isDesktop: false))
+                              .toList(),
+                        );
+                      }
+                      final cardWidth =
+                          (constraints.maxWidth - spacing * (cardsPerRow - 1)) /
+                              cardsPerRow;
+                      return Wrap(
+                        spacing: spacing,
+                        runSpacing: spacing,
+                        children: plans.map((plan) {
+                          return SizedBox(
+                            width: cardWidth,
+                            child: _buildPlanCard(plan, isDesktop: true),
+                          );
+                        }).toList(),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            );
           },
         ),
-      ),
     );
   }
 }

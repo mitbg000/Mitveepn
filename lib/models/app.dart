@@ -1,5 +1,5 @@
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/enum/enum.dart';
+import 'package:mitveepn/common/common.dart';
+import 'package:mitveepn/enum/enum.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -37,7 +37,7 @@ class AppState with _$AppState {
 }
 
 extension AppStateExt on AppState {
-  ViewMode get viewMode => utils.getViewMode(viewSize.width);
+  ViewMode get viewMode => utils.getViewMode(viewSize.width, viewSize.height);
 
   bool get isStart => runTime != null;
 }

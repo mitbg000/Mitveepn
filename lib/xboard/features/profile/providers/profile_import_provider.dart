@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/xboard/features/profile/profile.dart';
-import 'package:fl_clash/xboard/features/profile/services/profile_import_service.dart';
+import 'package:mitveepn/common/common.dart';
+import 'package:mitveepn/xboard/features/profile/profile.dart';
+import 'package:mitveepn/xboard/features/profile/services/profile_import_service.dart';
 class ProfileImportNotifier extends StateNotifier<ImportState> {
   final Ref _ref;
   

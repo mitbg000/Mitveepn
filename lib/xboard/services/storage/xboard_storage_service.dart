@@ -4,9 +4,9 @@
 library;
 
 import 'dart:convert';
-import 'package:fl_clash/xboard/core/core.dart';
-import 'package:fl_clash/xboard/infrastructure/infrastructure.dart';
-import 'package:fl_clash/xboard/sdk/xboard_sdk.dart';
+import 'package:mitveepn/xboard/core/core.dart';
+import 'package:mitveepn/xboard/infrastructure/infrastructure.dart';
+import 'package:mitveepn/xboard/sdk/xboard_sdk.dart';
 
 /// XBoard 存储服务
 ///

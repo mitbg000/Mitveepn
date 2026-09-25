@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'package:flutter_xboard_sdk/flutter_xboard_sdk.dart';
-import 'package:fl_clash/xboard/core/core.dart';
-import 'package:fl_clash/xboard/config/interface/config_provider_interface.dart';
-import 'package:fl_clash/xboard/config/utils/config_file_loader.dart';
-import 'package:fl_clash/xboard/infrastructure/http/user_agent_config.dart';
+import 'package:mitveepn/xboard/core/core.dart';
+import 'package:mitveepn/xboard/config/interface/config_provider_interface.dart';
+import 'package:mitveepn/xboard/config/utils/config_file_loader.dart';
+import 'package:mitveepn/xboard/infrastructure/http/user_agent_config.dart';
 
 /// 简化的 XBoard 客户端
 ///

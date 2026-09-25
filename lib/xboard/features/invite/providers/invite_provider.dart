@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/xboard/sdk/xboard_sdk.dart';
+import 'package:mitveepn/common/common.dart';
+import 'package:mitveepn/xboard/sdk/xboard_sdk.dart';
 
 class InviteState {
   final InviteData? inviteData;

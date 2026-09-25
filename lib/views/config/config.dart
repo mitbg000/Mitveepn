@@ -1,11 +1,11 @@
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/models/clash_config.dart';
-import 'package:fl_clash/providers/config.dart' show patchClashConfigProvider;
-import 'package:fl_clash/state.dart';
-import 'package:fl_clash/views/config/dns.dart';
-import 'package:fl_clash/views/config/general.dart';
-import 'package:fl_clash/views/config/network.dart';
-import 'package:fl_clash/widgets/widgets.dart';
+import 'package:mitveepn/common/common.dart';
+import 'package:mitveepn/models/clash_config.dart';
+import 'package:mitveepn/providers/config.dart' show patchClashConfigProvider;
+import 'package:mitveepn/state.dart';
+import 'package:mitveepn/views/config/dns.dart';
+import 'package:mitveepn/views/config/general.dart';
+import 'package:mitveepn/views/config/network.dart';
+import 'package:mitveepn/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

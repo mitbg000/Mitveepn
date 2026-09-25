@@ -1,6 +1,6 @@
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/widgets/fade_box.dart';
+import 'package:mitveepn/common/common.dart';
+import 'package:mitveepn/enum/enum.dart';
+import 'package:mitveepn/widgets/fade_box.dart';
 import 'package:flutter/material.dart';
 
 import 'text.dart';

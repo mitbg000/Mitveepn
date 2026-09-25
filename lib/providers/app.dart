@@ -1,7 +1,7 @@
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/models/models.dart';
-import 'package:fl_clash/state.dart';
+import 'package:mitveepn/common/common.dart';
+import 'package:mitveepn/enum/enum.dart';
+import 'package:mitveepn/models/models.dart';
+import 'package:mitveepn/state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -211,7 +211,7 @@ class ViewSize extends _$ViewSize with AutoDisposeNotifierMixin {
     );
   }
 
-  ViewMode get viewMode => utils.getViewMode(state.width);
+  ViewMode get viewMode => utils.getViewMode(state.width, state.height);
 
   bool get isMobileView => viewMode == ViewMode.mobile;
 }
@@ -223,7 +223,8 @@ double viewWidth(Ref ref) {
 
 @riverpod
 ViewMode viewMode(Ref ref) {
-  return utils.getViewMode(ref.watch(viewWidthProvider));
+  final size = ref.watch(viewSizeProvider);
+  return utils.getViewMode(size.width, size.height);
 }
 
 @riverpod

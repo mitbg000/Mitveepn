@@ -1,9 +1,10 @@
 import 'dart:io';
 
-import 'package:fl_clash/common/utils.dart';
-import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/models/models.dart';
-import 'package:fl_clash/state.dart';
+import 'package:mitveepn/common/utils.dart';
+import 'package:mitveepn/enum/enum.dart';
+import 'package:mitveepn/models/models.dart';
+import 'package:mitveepn/state.dart';
+import 'package:mitveepn/views/proxies/common.dart' as proxies_common;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -29,7 +30,9 @@ class Tray {
         brightness: brightness ??
             WidgetsBinding.instance.platformDispatcher.platformBrightness,
       ),
-      isTemplate: true,
+      // isTemplate: true sẽ khiến macOS render icon thành ảnh 1 màu (đen/trắng
+      // theo theme), làm mất màu gốc. Giữ false để hiện đúng icon nhiều màu.
+      isTemplate: false,
     );
     if (!Platform.isLinux) {
       await trayManager.setToolTip(
@@ -83,10 +86,15 @@ class Tray {
     if (Platform.isMacOS) {
       for (final group in trayState.groups) {
         List<MenuItem> subMenuItems = [];
+        final nameWidth = group.all.fold<int>(
+          0,
+          (width, proxy) =>
+              proxy.name.length > width ? proxy.name.length : width,
+        );
         for (final proxy in group.all) {
           subMenuItems.add(
             MenuItem.checkbox(
-              label: proxy.name,
+              label: _proxyLabelWithDelay(proxy.name, nameWidth),
               checked: trayState.selectedMap[group.name] == proxy.name,
               onClick: (_) {
                 final appController = globalState.appController;
@@ -112,6 +120,14 @@ class Tray {
         );
       }
       if (trayState.groups.isNotEmpty) {
+        menuItems.add(
+          MenuItem(
+            label: 'Test ping',
+            onClick: (_) async {
+              await _testAllProxiesDelay(trayState.groups);
+            },
+          ),
+        );
         menuItems.add(MenuItem.separator());
       }
     }
@@ -194,6 +210,35 @@ class Tray {
         text: cmdline,
       ),
     );
+  }
+
+  /// Nhãn hiển thị trong tray menu: tên proxy, ping đã test gần nhất (nếu có)
+  /// được đẩy sang lề phải bằng khoảng trắng đệm theo [nameWidth].
+  String _proxyLabelWithDelay(String proxyName, int nameWidth) {
+    final testUrl = globalState.config.appSetting.testUrl;
+    final delay = globalState.appState.delayMap[testUrl]?[proxyName];
+    if (delay == null) {
+      return proxyName;
+    }
+    final delayText = delay <= 0 ? 'timeout' : '${delay}ms';
+    final padding = ' ' * (nameWidth - proxyName.length + 4);
+    return '$proxyName$padding$delayText';
+  }
+
+  /// Test ping cho toàn bộ proxy đang có trong tray menu, sau đó rebuild menu
+  /// một lần để hiện ping mới (tray_manager không hỗ trợ sửa label tại chỗ).
+  Future<void> _testAllProxiesDelay(List<Group> groups) async {
+    final allProxies = <String, Proxy>{};
+    for (final group in groups) {
+      for (final proxy in group.all) {
+        allProxies[proxy.name] = proxy;
+      }
+    }
+    if (allProxies.isEmpty) {
+      return;
+    }
+    await proxies_common.delayTest(allProxies.values.toList());
+    await globalState.appController.updateTray();
   }
 }
 

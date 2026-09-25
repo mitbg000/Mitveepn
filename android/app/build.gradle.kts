@@ -23,8 +23,8 @@ val isRelease = mStoreFile.exists()
         && mKeyPassword != null
 
 android {
-    namespace = "com.follow.clash"
-    compileSdk = 35
+    namespace = "com.mitveepn.app"
+    compileSdk = 36
     ndkVersion = "28.0.13004108"
 
     compileOptions {
@@ -37,7 +37,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.follow.clash"
+        applicationId = "com.mitveepn.app"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
@@ -65,8 +65,11 @@ android {
             isMinifyEnabled = true
             isDebuggable = false
 
-            // 强制使用 debug 签名，不使用 release 签名
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = if (isRelease) {
+                signingConfigs.getByName("release")
+            } else {
+                signingConfigs.getByName("debug")
+            }
 
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),

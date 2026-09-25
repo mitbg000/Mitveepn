@@ -1,9 +1,9 @@
 import 'dart:math';
 
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/providers/providers.dart';
-import 'package:fl_clash/state.dart';
+import 'package:mitveepn/common/common.dart';
+import 'package:mitveepn/enum/enum.dart';
+import 'package:mitveepn/providers/providers.dart';
+import 'package:mitveepn/state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

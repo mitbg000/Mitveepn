@@ -1,6 +1,6 @@
 import 'dart:convert'; // 导入 json 编解码库
-import 'package:fl_clash/xboard/core/core.dart';
-import 'package:fl_clash/xboard/config/xboard_config.dart';
+import 'package:mitveepn/xboard/core/core.dart';
+import 'package:mitveepn/xboard/config/xboard_config.dart';
 
 import 'services/status_reporting_service.dart';
 import 'services/remote_task_service.dart';

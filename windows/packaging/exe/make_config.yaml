@@ -1,11 +1,11 @@
 script_template: inno_setup.iss
 app_id: 728B3532-C74B-4870-9068-BE70FE12A3E6
-app_name: Flclash
-publisher: chen08209
-publisher_url: https://github.com/chen08209/FlClash
-display_name: Flclash
-executable_name: Flclash.exe
-output_base_file_name: Flclash.exe
+app_name: Mitveepn
+publisher: mitveepn
+publisher_url: https://mitveepn.work
+display_name: Mitveepn
+executable_name: Mitveepn.exe
+output_base_file_name: Mitveepn.exe
 setup_icon_file: ..\windows\runner\resources\app_icon.ico
 locales:
   - lang: zh

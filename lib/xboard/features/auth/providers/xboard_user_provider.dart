@@ -1,9 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/xboard/features/auth/auth.dart';
-import 'package:fl_clash/xboard/services/services.dart';
-import 'package:fl_clash/xboard/sdk/xboard_sdk.dart';
-import 'package:fl_clash/xboard/features/profile/providers/profile_import_provider.dart';
+import 'package:mitveepn/common/common.dart';
+import 'package:mitveepn/state.dart';
+import 'package:mitveepn/xboard/features/auth/auth.dart';
+import 'package:mitveepn/xboard/services/services.dart';
+import 'package:mitveepn/xboard/sdk/xboard_sdk.dart';
+import 'package:mitveepn/xboard/features/profile/providers/profile_import_provider.dart';
 final userInfoProvider = StateProvider<UserInfoData?>((ref) => null);
 final subscriptionInfoProvider = StateProvider<SubscriptionData?>((ref) => null);
 final userUIStateProvider = StateProvider<UIState>((ref) => const UIState());
@@ -60,14 +61,52 @@ class XBoardUserAuthNotifier extends Notifier<UserAuthState> {
         commonPrint.log('快速认证成功：已有token，直接进入主界面. isInitialized: ${state.isInitialized}');
         _backgroundTokenValidation();
         
-        // 启动时自动导入订阅
-        if (subscriptionInfo?.subscribeUrl?.isNotEmpty == true) {
+        // Đã có profile sẵn trên máy thì dùng lại, không cần tải lại mỗi lần khởi động app
+        if (subscriptionInfo?.subscribeUrl?.isNotEmpty == true &&
+            globalState.config.profiles.isEmpty) {
           commonPrint.log('启动时自动导入订阅: ${subscriptionInfo!.subscribeUrl}');
           ref.read(profileImportProvider.notifier).importSubscription(subscriptionInfo.subscribeUrl!);
         }
         
         return true;
       } else {
+        // hasToken = false có 2 khả năng: (1) thực sự chưa đăng nhập, hoặc
+        // (2) không mạng nên XBoardSDK chưa khởi tạo được, không có nghĩa là đã logout.
+        // Với (2), vẫn phục hồi phiên đăng nhập từ dữ liệu đã lưu offline trên máy.
+        if (!XBoardSDK.isInitialized) {
+          String? email;
+          UserInfoData? savedUserInfo;
+          SubscriptionData? savedSubscriptionInfo;
+          try {
+            final emailResult = await _storageService.getUserEmail()
+                .timeout(const Duration(seconds: 2));
+            email = emailResult.dataOrNull;
+
+            final userInfoResult = await _storageService.getUserInfo()
+                .timeout(const Duration(seconds: 2));
+            savedUserInfo = userInfoResult.dataOrNull;
+
+            final subscriptionInfoResult = await _storageService.getSubscriptionInfo()
+                .timeout(const Duration(seconds: 2));
+            savedSubscriptionInfo = subscriptionInfoResult.dataOrNull;
+          } catch (e) {
+            commonPrint.log('读取离线登录缓存失败: $e');
+          }
+
+          if (savedUserInfo != null) {
+            commonPrint.log('快速认证：SDK未初始化（可能无网络），但本地存在已保存的登录会话，离线保持登录状态');
+            state = state.copyWith(
+              isAuthenticated: true,
+              isInitialized: true,
+              email: email,
+            );
+            ref.read(userInfoProvider.notifier).state = savedUserInfo;
+            if (savedSubscriptionInfo != null) {
+              ref.read(subscriptionInfoProvider.notifier).state = savedSubscriptionInfo;
+            }
+            return true;
+          }
+        }
         commonPrint.log('快速认证：无本地token，显示登录页面. isInitialized: ${state.isInitialized}');
         state = state.copyWith(isInitialized: true);
         return false;
@@ -121,7 +160,9 @@ class XBoardUserAuthNotifier extends Notifier<UserAuthState> {
         await _storageService.saveSubscriptionInfo(subscriptionData);
         ref.read(subscriptionInfoProvider.notifier).state = subscriptionData;
 
-        if (subscriptionData.subscribeUrl?.isNotEmpty == true) {
+        // Đã có profile sẵn trên máy thì dùng lại, không cần tải lại
+        if (subscriptionData.subscribeUrl?.isNotEmpty == true &&
+            globalState.config.profiles.isEmpty) {
           ref.read(profileImportProvider.notifier).importSubscription(subscriptionData.subscribeUrl!);
         }
       }
@@ -156,8 +197,10 @@ class XBoardUserAuthNotifier extends Notifier<UserAuthState> {
       final success = await XBoardSDK.login(email: email, password: password);
       if (success) {
         commonPrint.log('登录成功，authData token已保存到TokenManager，立即获取用户信息');
+        // 开始新的登录会话前，清空之前遗留的会话（例如手动添加的配置）
+        await globalState.appController.clearAllProfiles();
         await _storageService.saveUserEmail(email);
-        
+
         // 立即获取用户信息和订阅信息
         try {
           commonPrint.log('开始获取用户信息...');
@@ -346,7 +389,11 @@ class XBoardUserAuthNotifier extends Notifier<UserAuthState> {
     }
   }
 
-  Future<void> refreshSubscriptionInfo() async {
+  /// [reimportProfile] chỉ nên true khi người dùng bấm nút refresh thủ công
+  /// (cần tải lại profile ngay để cập nhật dung lượng/hạn dùng mới nhất).
+  /// Đường tự động lúc khởi động app phải truyền false để không xóa và
+  /// tải lại profile đã có mỗi lần mở app.
+  Future<void> refreshSubscriptionInfo({bool reimportProfile = true}) async {
     if (!state.isAuthenticated) {
       return;
     }
@@ -378,7 +425,9 @@ class XBoardUserAuthNotifier extends Notifier<UserAuthState> {
       commonPrint.log('订阅信息已刷新');
 
       // 触发订阅导入流程（下载、解密、导入配置）
-      if (subscriptionData?.subscribeUrl?.isNotEmpty == true) {
+      if (!reimportProfile) {
+        commonPrint.log('[刷新] 跳过重新导入 profile（自动检查场景）');
+      } else if (subscriptionData?.subscribeUrl?.isNotEmpty == true) {
         commonPrint.log('[手动刷新] 开始导入订阅配置: ${subscriptionData!.subscribeUrl}');
         commonPrint.log('[手动刷新] 使用强制刷新模式，跳过重复检测');
         ref.read(profileImportProvider.notifier).importSubscription(
@@ -417,6 +466,10 @@ class XBoardUserAuthNotifier extends Notifier<UserAuthState> {
     commonPrint.log('用户登出');
     await XBoardSDK.logout();
     await _storageService.clearAuthData();
+    ref.read(userInfoProvider.notifier).state = null;
+    ref.read(subscriptionInfoProvider.notifier).state = null;
+    // 退出登录会清空当前会话（登录会话或手动添加的配置会话），确保只剩一个空状态
+    await globalState.appController.clearAllProfiles();
     state = const UserAuthState(
       isInitialized: true, // 登出后保持初始化状态，只重置认证信息
     );

@@ -22,7 +22,7 @@ final viewWidthProvider = AutoDisposeProvider<double>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef ViewWidthRef = AutoDisposeProviderRef<double>;
-String _$viewModeHash() => r'736e2acc7e7d98ee30132de1990bf85f9506b47a';
+String _$viewModeHash() => r'b570965c5c2992acd1b500dbe6ad74986ceef4d9';
 
 /// See also [viewMode].
 @ProviderFor(viewMode)
@@ -219,7 +219,7 @@ final runTimeProvider = AutoDisposeNotifierProvider<RunTime, int?>.internal(
 );
 
 typedef _$RunTime = AutoDisposeNotifier<int?>;
-String _$viewSizeHash() => r'07f9cce28a69d1496ba4643ef72a739312f6fc28';
+String _$viewSizeHash() => r'a00766ff7e7bc5602d49a63e378a47a985c347d3';
 
 /// See also [ViewSize].
 @ProviderFor(ViewSize)

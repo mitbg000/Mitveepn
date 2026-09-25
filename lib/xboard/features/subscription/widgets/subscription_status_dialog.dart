@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/subscription_status_service.dart';
-import 'package:fl_clash/l10n/l10n.dart';
+import 'package:mitveepn/l10n/l10n.dart';
 class SubscriptionStatusDialog extends StatelessWidget {
   final SubscriptionStatusResult statusResult;
   final VoidCallback? onPurchase;

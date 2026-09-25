@@ -1,9 +1,9 @@
 import 'dart:math';
 
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/providers/providers.dart';
-import 'package:fl_clash/state.dart';
-import 'package:fl_clash/widgets/widgets.dart';
+import 'package:mitveepn/common/common.dart';
+import 'package:mitveepn/providers/providers.dart';
+import 'package:mitveepn/state.dart';
+import 'package:mitveepn/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -387,9 +387,12 @@ class _DelayTestButtonState extends State<DelayTestButton>
       return;
     }
     _controller.forward();
-    await widget.onClick();
-    if (mounted) {
-      _controller.reverse();
+    try {
+      await widget.onClick();
+    } finally {
+      if (mounted) {
+        _controller.reverse();
+      }
     }
   }
 
@@ -436,10 +439,29 @@ class _DelayTestButtonState extends State<DelayTestButton>
           ),
         );
       },
-      child: FloatingActionButton(
-        heroTag: null,
-        onPressed: _healthcheck,
-        child: const Icon(Icons.network_ping),
+      child: Container(
+        width: 56,
+        height: 56,
+        decoration: const BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFFFFD600), Color(0xFFFF6D00)],
+          ),
+        ),
+        child: Material(
+          type: MaterialType.transparency,
+          shape: const CircleBorder(),
+          child: InkWell(
+            onTap: _healthcheck,
+            customBorder: const CircleBorder(),
+            child: const Icon(
+              Icons.bolt,
+              color: Colors.white,
+            ),
+          ),
+        ),
       ),
     );
   }

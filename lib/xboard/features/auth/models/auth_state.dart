@@ -1,4 +1,4 @@
-import 'package:fl_clash/xboard/sdk/xboard_sdk.dart';
+import 'package:mitveepn/xboard/sdk/xboard_sdk.dart';
 
 /// 通用UI状态
 class UIState {

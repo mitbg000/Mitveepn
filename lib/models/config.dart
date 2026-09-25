@@ -1,7 +1,7 @@
 // ignore_for_file: invalid_annotation_target
 
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/enum/enum.dart';
+import 'package:mitveepn/common/common.dart';
+import 'package:mitveepn/enum/enum.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -33,11 +33,15 @@ const defaultBypassDomain = [
 const defaultAppSettingProps = AppSettingProps();
 const defaultVpnProps = VpnProps();
 const defaultNetworkProps = NetworkProps();
-const defaultProxiesStyle = ProxiesStyle();
+const defaultProxiesStyle = ProxiesStyle(
+  layout: ProxiesLayout.tight,
+  cardType: ProxyCardType.min,
+);
 const defaultWindowProps = WindowProps();
 const defaultAccessControl = AccessControl();
 final defaultThemeProps = ThemeProps(
   primaryColor: defaultPrimaryColor,
+  themeMode: ThemeMode.dark,
 );
 
 const List<DashboardWidget> defaultDashboardWidgets = [
@@ -165,9 +169,9 @@ class ProxiesStyle with _$ProxiesStyle {
   const factory ProxiesStyle({
     @Default(ProxiesType.tab) ProxiesType type,
     @Default(ProxiesSortType.none) ProxiesSortType sortType,
-    @Default(ProxiesLayout.standard) ProxiesLayout layout,
+    @Default(ProxiesLayout.tight) ProxiesLayout layout,
     @Default(ProxiesIconStyle.standard) ProxiesIconStyle iconStyle,
-    @Default(ProxyCardType.expand) ProxyCardType cardType,
+    @Default(ProxyCardType.min) ProxyCardType cardType,
     @Default({}) Map<String, String> iconMap,
   }) = _ProxiesStyle;
 
@@ -191,7 +195,7 @@ class ThemeProps with _$ThemeProps {
   const factory ThemeProps({
     int? primaryColor,
     @Default(defaultPrimaryColors) List<int> primaryColors,
-    @Default(ThemeMode.system) ThemeMode themeMode,
+    @Default(ThemeMode.dark) ThemeMode themeMode,
     @Default(DynamicSchemeVariant.content) DynamicSchemeVariant schemeVariant,
     @Default(false) bool pureBlack,
     @Default(TextScale()) TextScale textScale,
@@ -274,6 +278,10 @@ class Config with _$Config {
         }
       }
     } catch (_) {}
+    final currentProfileId = json["currentProfileId"];
+    if (currentProfileId != null && currentProfileId is! String) {
+      json["currentProfileId"] = currentProfileId.toString();
+    }
     return Config.fromJson(json);
   }
 }

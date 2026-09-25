@@ -264,19 +264,84 @@ class AppLocalizations {
     );
   }
 
+  /// `Domain Status`
+  String get domainStatusTitle {
+    return Intl.message(
+      'Domain Status',
+      name: 'domainStatusTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Domain is not ready, please try again`
+  String get domainNotReadyTryAgain {
+    return Intl.message(
+      'Domain is not ready, please try again',
+      name: 'domainNotReadyTryAgain',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Last checked`
+  String get lastChecked {
+    return Intl.message(
+      'Last checked',
+      name: 'lastChecked',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Error message`
+  String get errorMessage {
+    return Intl.message(
+      'Error message',
+      name: 'errorMessage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Available domains`
+  String get availableDomains {
+    return Intl.message(
+      'Available domains',
+      name: 'availableDomains',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add subscription`
+  String get addSubscription {
+    return Intl.message(
+      'Add subscription',
+      name: 'addSubscription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Profile added successfully`
+  String get profileAddedSuccessfully {
+    return Intl.message(
+      'Profile added successfully',
+      name: 'profileAddedSuccessfully',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `English`
   String get en {
     return Intl.message('English', name: 'en', desc: '', args: []);
   }
 
-  /// `Japanese`
-  String get ja {
-    return Intl.message('Japanese', name: 'ja', desc: '', args: []);
-  }
-
-  /// `Russian`
-  String get ru {
-    return Intl.message('Russian', name: 'ru', desc: '', args: []);
+  /// `Vietnamese`
+  String get vi {
+    return Intl.message('Vietnamese', name: 'vi', desc: '', args: []);
   }
 
   /// `Simplified Chinese`
@@ -3549,10 +3614,10 @@ class AppLocalizations {
     );
   }
 
-  /// `Please select purchase period`
+  /// `Select Period`
   String get xboardSelectPeriod {
     return Intl.message(
-      'Please select purchase period',
+      'Select Period',
       name: 'xboardSelectPeriod',
       desc: '',
       args: [],
@@ -4794,10 +4859,10 @@ class AppLocalizations {
     );
   }
 
-  /// `Payment failed`
+  /// `Payment failed: No payment link received`
   String get xboardPaymentFailed {
     return Intl.message(
-      'Payment failed',
+      'Payment failed: No payment link received',
       name: 'xboardPaymentFailed',
       desc: '',
       args: [],
@@ -6319,6 +6384,16 @@ class AppLocalizations {
     );
   }
 
+  /// `Cannot open link: {url}`
+  String cannotOpenLink(String url) {
+    return Intl.message(
+      'Cannot open link: $url',
+      name: 'cannotOpenLink',
+      desc: '',
+      args: [url],
+    );
+  }
+
   /// `Failed to open web, please visit manually`
   String get openWebFailed {
     return Intl.message(
@@ -6988,6 +7063,291 @@ class AppLocalizations {
       args: [],
     );
   }
+
+  /// `Create Order`
+  String get xboardCreateOrder {
+    return Intl.message(
+      'Create Order',
+      name: 'xboardCreateOrder',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select a Plan`
+  String get xboardSelectAPlan {
+    return Intl.message(
+      'Select a Plan',
+      name: 'xboardSelectAPlan',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Change`
+  String get xboardChange {
+    return Intl.message('Change', name: 'xboardChange', desc: '', args: []);
+  }
+
+  /// `Apply`
+  String get xboardApply {
+    return Intl.message('Apply', name: 'xboardApply', desc: '', args: []);
+  }
+
+  /// `Original price`
+  String get xboardOriginalPrice {
+    return Intl.message(
+      'Original price',
+      name: 'xboardOriginalPrice',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Discount`
+  String get xboardDiscount {
+    return Intl.message('Discount', name: 'xboardDiscount', desc: '', args: []);
+  }
+
+  /// `Amount to pay`
+  String get xboardAmountToPay {
+    return Intl.message(
+      'Amount to pay',
+      name: 'xboardAmountToPay',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select Payment Method`
+  String get xboardSelectPaymentMethod {
+    return Intl.message(
+      'Select Payment Method',
+      name: 'xboardSelectPaymentMethod',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `/ month`
+  String get xboardPerMonth {
+    return Intl.message('/ month', name: 'xboardPerMonth', desc: '', args: []);
+  }
+
+  /// `Mbps`
+  String get xboardMbps {
+    return Intl.message('Mbps', name: 'xboardMbps', desc: '', args: []);
+  }
+
+  /// `devices`
+  String get xboardDevices {
+    return Intl.message('devices', name: 'xboardDevices', desc: '', args: []);
+  }
+
+  /// `Unlimited`
+  String get xboardUnlimited {
+    return Intl.message(
+      'Unlimited',
+      name: 'xboardUnlimited',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No payment methods available`
+  String get xboardNoPaymentMethods {
+    return Intl.message(
+      'No payment methods available',
+      name: 'xboardNoPaymentMethods',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Cannot open payment link`
+  String get xboardCannotOpenPaymentLink {
+    return Intl.message(
+      'Cannot open payment link',
+      name: 'xboardCannotOpenPaymentLink',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Cannot launch external browser`
+  String get xboardCannotLaunchBrowser {
+    return Intl.message(
+      'Cannot launch external browser',
+      name: 'xboardCannotLaunchBrowser',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Failed to open payment page: {error}`
+  String xboardOpenPaymentPageFailed(String error) {
+    return Intl.message(
+      'Failed to open payment page: $error',
+      name: 'xboardOpenPaymentPageFailed',
+      desc: '',
+      args: [error],
+    );
+  }
+
+  /// `Load failed`
+  String get xboardLoadFailed {
+    return Intl.message(
+      'Load failed',
+      name: 'xboardLoadFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No plans available`
+  String get xboardNoPlansAvailable {
+    return Intl.message(
+      'No plans available',
+      name: 'xboardNoPlansAvailable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Core Status`
+  String get xboardCoreStatus {
+    return Intl.message(
+      'Core Status',
+      name: 'xboardCoreStatus',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Connected`
+  String get xboardConnected {
+    return Intl.message(
+      'Connected',
+      name: 'xboardConnected',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Connect`
+  String get xboardConnect {
+    return Intl.message('Connect', name: 'xboardConnect', desc: '', args: []);
+  }
+
+  /// `Yes`
+  String get xboardYes {
+    return Intl.message('Yes', name: 'xboardYes', desc: '', args: []);
+  }
+
+  /// `No`
+  String get xboardNo {
+    return Intl.message('No', name: 'xboardNo', desc: '', args: []);
+  }
+
+  /// `Enabled`
+  String get xboardEnabled {
+    return Intl.message('Enabled', name: 'xboardEnabled', desc: '', args: []);
+  }
+
+  /// `Disabled`
+  String get xboardDisabled {
+    return Intl.message('Disabled', name: 'xboardDisabled', desc: '', args: []);
+  }
+
+  /// `Notifications`
+  String get xboardNotifications {
+    return Intl.message(
+      'Notifications',
+      name: 'xboardNotifications',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Customer support not enabled`
+  String get xboardCustomerSupportNotEnabled {
+    return Intl.message(
+      'Customer support not enabled',
+      name: 'xboardCustomerSupportNotEnabled',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Failed to load config: {error}`
+  String xboardLoadConfigFailed(String error) {
+    return Intl.message(
+      'Failed to load config: $error',
+      name: 'xboardLoadConfigFailed',
+      desc: '',
+      args: [error],
+    );
+  }
+
+  /// `Data Usage`
+  String get xboardDataUsage {
+    return Intl.message(
+      'Data Usage',
+      name: 'xboardDataUsage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Buy plan`
+  String get xboardBuyPlan {
+    return Intl.message('Buy plan', name: 'xboardBuyPlan', desc: '', args: []);
+  }
+
+  /// `Traffic Trend`
+  String get xboardTrafficTrend {
+    return Intl.message(
+      'Traffic Trend',
+      name: 'xboardTrafficTrend',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `30-day bandwidth usage history`
+  String get xboardBandwidthUsageHistory {
+    return Intl.message(
+      '30-day bandwidth usage history',
+      name: 'xboardBandwidthUsageHistory',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Refresh subscription info`
+  String get xboardRefreshSubscriptionInfo {
+    return Intl.message(
+      'Refresh subscription info',
+      name: 'xboardRefreshSubscriptionInfo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Disconnect`
+  String get xboardDisconnect {
+    return Intl.message(
+      'Disconnect',
+      name: 'xboardDisconnect',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Home`
+  String get xboardHome {
+    return Intl.message('Home', name: 'xboardHome', desc: '', args: []);
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<AppLocalizations> {
@@ -6996,8 +7356,7 @@ class AppLocalizationDelegate extends LocalizationsDelegate<AppLocalizations> {
   List<Locale> get supportedLocales {
     return const <Locale>[
       Locale.fromSubtags(languageCode: 'en'),
-      Locale.fromSubtags(languageCode: 'ja'),
-      Locale.fromSubtags(languageCode: 'ru'),
+      Locale.fromSubtags(languageCode: 'vi'),
       Locale.fromSubtags(languageCode: 'zh', countryCode: 'CN'),
     ];
   }

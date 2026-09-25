@@ -1,28 +1,85 @@
-import 'package:fl_clash/providers/providers.dart';
+import 'package:mitveepn/providers/providers.dart';
+import 'package:mitveepn/common/common.dart';
+import 'package:mitveepn/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class LanguageSelector extends ConsumerWidget {
   const LanguageSelector({super.key});
 
-  static const List<Map<String, String>> supportedLanguages = [
-    {'code': 'zh_CN', 'name': '中文', 'flag': '🇨🇳'},
-    {'code': 'en', 'name': 'English', 'flag': '🌐'},
+  static const List<String> _preferredOrder = [
+    'en',
+    'zh_CN',
+    'vi',
   ];
+
+  List<Locale?> _getLocaleOptions() {
+    final supportedLocales = AppLocalizations.delegate.supportedLocales;
+    final localeMap = <String, Locale>{
+      for (final locale in supportedLocales) locale.toString(): locale,
+    };
+
+    final orderedLocales = <Locale>[
+      for (final code in _preferredOrder)
+        if (localeMap[code] != null) localeMap[code]!,
+      for (final locale in supportedLocales)
+        if (!_preferredOrder.contains(locale.toString())) locale,
+    ];
+
+    return [null, ...orderedLocales];
+  }
+
+  String _getLocaleLabel(Locale? locale) {
+    if (locale == null) return appLocalizations.defaultText;
+    switch (locale.toString()) {
+      case 'zh_CN':
+        return appLocalizations.zh_CN;
+      case 'en':
+        return appLocalizations.en;
+      case 'vi':
+        return appLocalizations.vi;
+      default:
+        return locale.toString();
+    }
+  }
+
+  String _getLocaleFlag(Locale? locale) {
+    switch (locale?.toString()) {
+      case 'zh_CN':
+        return '🇨🇳';
+      case 'en':
+        return '🌐';
+      case 'vi':
+        return '🇻🇳';
+      default:
+        return '🌐';
+    }
+  }
+
+  String _getLocaleShortCode(Locale? locale) {
+    if (locale == null) return 'AUTO';
+    if (locale.toString() == 'zh_CN') return '中';
+    return locale.languageCode.toUpperCase();
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = Theme.of(context).colorScheme;
     final appSetting = ref.watch(appSettingProvider);
     final currentLocale = appSetting.locale;
+    final currentLocaleObj = utils.getLocaleForString(currentLocale);
+    final localeOptions = _getLocaleOptions();
 
-    // 查找当前语言
-    final currentLanguage = supportedLanguages.firstWhere(
-      (lang) => lang['code'] == currentLocale,
-      orElse: () => supportedLanguages[0], // 默认使用简体中文
-    );
+    final selectedLocale = currentLocaleObj == null
+        ? null
+        : localeOptions
+            .whereType<Locale>()
+            .firstWhere(
+              (l) => l.toString() == currentLocaleObj.toString(),
+              orElse: () => currentLocaleObj,
+            );
 
-    return PopupMenuButton<String>(
+    return PopupMenuButton<Locale?>(
       icon: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
@@ -37,12 +94,12 @@ class LanguageSelector extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              currentLanguage['flag']!,
+              _getLocaleFlag(selectedLocale),
               style: const TextStyle(fontSize: 18),
             ),
             const SizedBox(width: 6),
             Text(
-              currentLanguage['code'] == 'zh_CN' ? '中' : 'EN',
+              _getLocaleShortCode(selectedLocale),
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
@@ -58,28 +115,27 @@ class LanguageSelector extends ConsumerWidget {
           ],
         ),
       ),
-      tooltip: '切换语言 / Switch Language',
-      onSelected: (String languageCode) {
+      tooltip: appLocalizations.language,
+      onSelected: (Locale? locale) {
         ref.read(appSettingProvider.notifier).updateState(
-          (state) => state.copyWith(locale: languageCode),
+          (state) => state.copyWith(locale: locale?.toString()),
         );
       },
       itemBuilder: (BuildContext context) {
-        return supportedLanguages.map<PopupMenuEntry<String>>(
-          (Map<String, String> language) {
-            final isSelected = language['code'] == currentLocale;
-            return PopupMenuItem<String>(
-              value: language['code'],
+        return localeOptions.map<PopupMenuEntry<Locale?>>((locale) {
+          final isSelected = locale?.toString() == selectedLocale?.toString();
+          return PopupMenuItem<Locale?>(
+            value: locale,
               child: Row(
                 children: [
                   Text(
-                    language['flag']!,
+                    _getLocaleFlag(locale),
                     style: const TextStyle(fontSize: 18),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      language['name']!,
+                      _getLocaleLabel(locale),
                       style: TextStyle(
                         color: isSelected
                             ? colorScheme.primary
@@ -96,9 +152,8 @@ class LanguageSelector extends ConsumerWidget {
                     ),
                 ],
               ),
-            );
-          },
-        ).toList();
+          );
+        }).toList();
       },
     );
   }

@@ -1,10 +1,10 @@
-import 'package:fl_clash/xboard/features/auth/providers/xboard_user_provider.dart';
+import 'package:mitveepn/xboard/features/auth/providers/xboard_user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:fl_clash/models/models.dart' as fl_models;
-import 'package:fl_clash/xboard/sdk/xboard_sdk.dart';
+import 'package:mitveepn/models/models.dart' as fl_models;
+import 'package:mitveepn/xboard/sdk/xboard_sdk.dart';
 import '../services/subscription_status_service.dart';
-import 'package:fl_clash/l10n/l10n.dart';
+import 'package:mitveepn/l10n/l10n.dart';
 class SubscriptionUsageCard extends ConsumerWidget {
   final SubscriptionData? subscriptionInfo;
   final UserInfoData? userInfo;
@@ -172,7 +172,7 @@ class SubscriptionUsageCard extends ConsumerWidget {
                           color: statusColor,
                           size: 20,
                         ),
-                    tooltip: '刷新订阅信息',
+                    tooltip: AppLocalizations.of(context).xboardRefreshSubscriptionInfo,
                     style: IconButton.styleFrom(
                       padding: EdgeInsets.zero,
                       minimumSize: const Size(20, 20),
@@ -266,7 +266,7 @@ class SubscriptionUsageCard extends ConsumerWidget {
                           color: theme.colorScheme.primary,
                           size: 20,
                         ),
-                    tooltip: '刷新订阅信息',
+                    tooltip: AppLocalizations.of(context).xboardRefreshSubscriptionInfo,
                     style: IconButton.styleFrom(
                       padding: EdgeInsets.zero,
                       minimumSize: const Size(20, 20),

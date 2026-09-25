@@ -1,7 +1,7 @@
-import 'package:fl_clash/xboard/core/core.dart';
-import 'package:fl_clash/xboard/config/core/service_locator.dart';
-import 'package:fl_clash/xboard/config/services/online_support_service.dart';
-import 'package:fl_clash/xboard/sdk/xboard_sdk.dart';
+import 'package:mitveepn/xboard/core/core.dart';
+import 'package:mitveepn/xboard/config/core/service_locator.dart';
+import 'package:mitveepn/xboard/config/services/online_support_service.dart';
+import 'package:mitveepn/xboard/sdk/xboard_sdk.dart';
 
 /// 客服系统服务配置
 class CustomerSupportServiceConfig {

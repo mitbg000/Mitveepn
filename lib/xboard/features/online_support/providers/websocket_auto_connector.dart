@@ -1,7 +1,9 @@
-import 'package:fl_clash/xboard/core/core.dart';
+import 'package:mitveepn/xboard/core/core.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:fl_clash/xboard/features/online_support/providers/chat_provider.dart';
-import 'package:fl_clash/xboard/features/auth/auth.dart';
+import 'package:mitveepn/xboard/features/online_support/providers/chat_provider.dart';
+import 'package:mitveepn/xboard/features/online_support/services/service_config.dart';
+import 'package:mitveepn/xboard/features/online_support/services/websocket_service.dart';
+import 'package:mitveepn/xboard/features/auth/auth.dart';
 
 /// WebSocket 自动连接器
 ///
@@ -15,8 +17,30 @@ import 'package:fl_clash/xboard/features/auth/auth.dart';
 /// 2. 登录成功(false → true)时自动连接 WebSocket
 /// 3. 登出(true → false)时自动断开 WebSocket
 /// 4. 初始化时检查当前认证状态,如果已登录则立即连接
+/// Tắt WebSocket: server support chưa phục vụ upgrade tại endpoint đang cấu
+/// hình, mỗi lần kết nối đều fail rồi retry vô hạn và ném unhandled exception.
+/// Chat vẫn hoạt động đầy đủ qua HTTP API (gửi tin, đánh dấu đã đọc, tải lịch
+/// sử đều đã có nhánh fallback khi `isConnected == false`).
+const _webSocketEnabled = false;
+
 final webSocketAutoConnectorProvider = Provider<void>((ref) {
-  final wsService = ref.watch(wsServiceProvider);
+  if (!_webSocketEnabled) {
+    return;
+  }
+
+  // Chưa có cấu hình WebSocket (ví dụ chưa lấy được config từ remote do mất mạng)
+  // thì bỏ qua, tránh throw exception làm crash toàn bộ UI.
+  if (CustomerSupportServiceConfig.wsBaseUrl == null) {
+    return;
+  }
+
+  final CustomerSupportWebSocketService wsService;
+  try {
+    wsService = ref.watch(wsServiceProvider);
+  } catch (e) {
+    XBoardLogger.error('WebSocketAutoConnector: 初始化 wsService 失败', e);
+    return;
+  }
 
   // 监听认证状态变化
   ref.listen<UserAuthState>(

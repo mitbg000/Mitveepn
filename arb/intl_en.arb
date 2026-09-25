@@ -30,9 +30,15 @@
   "domainStatusChecking": "Checking...",
   "domainStatusAvailable": "Service Available",
   "domainStatusUnavailable": "Service Unavailable",
+  "domainStatusTitle": "Domain Status",
+  "domainNotReadyTryAgain": "Domain is not ready, please try again",
+  "lastChecked": "Last checked",
+  "errorMessage": "Error message",
+  "availableDomains": "Available domains",
+  "addSubscription": "Add subscription",
+  "profileAddedSuccessfully": "Profile added successfully",
   "en": "English",
-  "ja": "Japanese",
-  "ru": "Russian",
+  "vi": "Vietnamese",
   "zh_CN": "Simplified Chinese",
   "theme": "Theme",
   "themeDesc": "Set dark mode,adjust the color",
@@ -868,6 +874,14 @@
   "completeWithdrawal": "Web version provides complete withdrawal features",
   "goToWeb": "Go to Web",
   "cannotOpenBrowser": "Cannot open browser, please visit web manually",
+  "cannotOpenLink": "Cannot open link: {url}",
+  "@cannotOpenLink": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
   "openWebFailed": "Failed to open web, please visit manually",
   "cannotGetWebUrl": "Cannot get web URL, please contact support",
   "transferToWallet": "Transfer to Wallet",
@@ -1059,5 +1073,59 @@
   "contactSupport": "Support",
   "configurationError": "Application configuration error, please contact support",
   "onlineSupportWebSocketConfigNotFound": "Online support WebSocket configuration not found, please check configuration",
-  "newMessageFromSupport": "New message from support"
+  "newMessageFromSupport": "New message from support",
+  "xboardCreateOrder": "Create Order",
+  "xboardSelectAPlan": "Select a Plan",
+  "xboardChange": "Change",
+  "xboardSelectPeriod": "Select Period",
+  "xboardEnterCouponCode": "Enter coupon code",
+  "xboardApply": "Apply",
+  "xboardOriginalPrice": "Original price",
+  "xboardDiscount": "Discount",
+  "xboardAmountToPay": "Amount to pay",
+  "xboardSelectPaymentMethod": "Select Payment Method",
+  "xboardPerMonth": "/ month",
+  "xboardMbps": "Mbps",
+  "xboardDevices": "devices",
+  "xboardUnlimited": "Unlimited",
+  "xboardProcessing": "Processing...",
+  "xboardPlanNotFound": "Plan not found",
+  "xboardNoPaymentMethods": "No payment methods available",
+  "xboardPaymentFailed": "Payment failed: No payment link received",
+  "xboardCannotOpenPaymentLink": "Cannot open payment link",
+  "xboardCannotLaunchBrowser": "Cannot launch external browser",
+  "xboardOpenPaymentPageFailed": "Failed to open payment page: {error}",
+  "@xboardOpenPaymentPageFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "xboardLoadFailed": "Load failed",
+  "xboardNoPlansAvailable": "No plans available",
+  "xboardCoreStatus": "Core Status",
+  "xboardConnected": "Connected",
+  "xboardConnect": "Connect",
+  "xboardYes": "Yes",
+  "xboardNo": "No",
+  "xboardEnabled": "Enabled",
+  "xboardDisabled": "Disabled",
+  "xboardNotifications": "Notifications",
+  "xboardCustomerSupportNotEnabled": "Customer support not enabled",
+  "xboardLoadConfigFailed": "Failed to load config: {error}",
+  "@xboardLoadConfigFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "xboardDataUsage": "Data Usage",
+  "xboardBuyPlan": "Buy plan",
+  "xboardTrafficTrend": "Traffic Trend",
+  "xboardBandwidthUsageHistory": "30-day bandwidth usage history",
+  "xboardRefreshSubscriptionInfo": "Refresh subscription info",
+  "xboardDisconnect": "Disconnect",
+  "xboardHome": "Home"
 }

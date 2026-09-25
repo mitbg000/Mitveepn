@@ -1,9 +1,8 @@
-import 'package:fl_clash/widgets/widgets.dart';
-
-import 'package:fl_clash/xboard/sdk/xboard_sdk.dart';
-import 'package:fl_clash/xboard/core/core.dart';
-import 'package:fl_clash/xboard/features/auth/providers/xboard_user_provider.dart';
-import 'package:fl_clash/xboard/features/payment/providers/xboard_payment_provider.dart';
+import 'package:mitveepn/xboard/sdk/xboard_sdk.dart';
+import 'package:mitveepn/xboard/core/core.dart';
+import 'package:mitveepn/xboard/features/auth/providers/xboard_user_provider.dart';
+import 'package:mitveepn/xboard/features/payment/providers/xboard_payment_provider.dart';
+import 'package:mitveepn/xboard/features/payment/providers/selected_plan_provider.dart';
 
 import '../widgets/payment_waiting_overlay.dart';
 import '../models/payment_step.dart';
@@ -11,12 +10,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:fl_clash/l10n/l10n.dart';
+import 'package:mitveepn/l10n/l10n.dart';
 class PlanPurchasePage extends ConsumerStatefulWidget {
-  final PlanData plan;
   const PlanPurchasePage({
     super.key,
-    required this.plan,
   });
   @override
   ConsumerState<PlanPurchasePage> createState() => _PlanPurchasePageState();
@@ -27,7 +24,6 @@ class _PlanPurchasePageState extends ConsumerState<PlanPurchasePage> {
   final _couponController = TextEditingController();
   bool _isCouponValidating = false;
   bool? _isCouponValid;
-  String? _couponErrorMessage;
   double? _discountAmount;
   double? _finalPrice;
   double? _userBalance;
@@ -80,66 +76,54 @@ class _PlanPurchasePageState extends ConsumerState<PlanPurchasePage> {
     }
   }
   List<Map<String, dynamic>> _getAvailablePeriods(BuildContext context) {
+    final plan = ref.read(selectedPlanProvider);
+    if (plan == null) return [];
+
     final List<Map<String, dynamic>> periods = [];
-    if (widget.plan.monthPrice != null) {
+    if (plan.monthPrice != null) {
       periods.add({
         'period': 'month_price',
         'label': AppLocalizations.of(context).xboardMonthlyPayment,
-        'price': widget.plan.monthPrice!,
+        'price': plan.monthPrice!,
         'description': AppLocalizations.of(context).xboardMonthlyRenewal,
       });
     }
-    if (widget.plan.quarterPrice != null) {
+    if (plan.quarterPrice != null) {
       periods.add({
         'period': 'quarter_price',
         'label': AppLocalizations.of(context).xboardQuarterlyPayment,
-        'price': widget.plan.quarterPrice!,
+        'price': plan.quarterPrice!,
         'description': AppLocalizations.of(context).xboardThreeMonthCycle,
       });
     }
-    if (widget.plan.halfYearPrice != null) {
+    if (plan.halfYearPrice != null) {
       periods.add({
         'period': 'half_year_price',
         'label': AppLocalizations.of(context).xboardHalfYearlyPayment,
-        'price': widget.plan.halfYearPrice!,
+        'price': plan.halfYearPrice!,
         'description': AppLocalizations.of(context).xboardSixMonthCycle,
       });
     }
-    if (widget.plan.yearPrice != null) {
+    if (plan.yearPrice != null) {
       periods.add({
         'period': 'year_price',
         'label': AppLocalizations.of(context).xboardYearlyPayment,
-        'price': widget.plan.yearPrice!,
+        'price': plan.yearPrice!,
         'description': AppLocalizations.of(context).xboardTwelveMonthCycle,
       });
     }
-    if (widget.plan.twoYearPrice != null) {
-      periods.add({
-        'period': 'two_year_price',
-        'label': AppLocalizations.of(context).xboardTwoYearPayment,
-        'price': widget.plan.twoYearPrice!,
-        'description': AppLocalizations.of(context).xboardTwentyFourMonthCycle,
-      });
-    }
-    if (widget.plan.threeYearPrice != null) {
-      periods.add({
-        'period': 'three_year_price',
-        'label': AppLocalizations.of(context).xboardThreeYearPayment,
-        'price': widget.plan.threeYearPrice!,
-        'description': AppLocalizations.of(context).xboardThirtySixMonthCycle,
-      });
-    }
-    if (widget.plan.onetimePrice != null) {
-      periods.add({
-        'period': 'onetime_price',
-        'label': AppLocalizations.of(context).xboardOneTimePayment,
-        'price': widget.plan.onetimePrice!,
-        'description': AppLocalizations.of(context).xboardBuyoutPlan,
-      });
-    }
+    // Loại bỏ 2 year, 3 year, và one time periods
     return periods;
   }
   Future<void> _proceedToPurchase() async {
+    final plan = ref.read(selectedPlanProvider);
+    if (plan == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context).xboardPlanNotFound)),
+      );
+      return;
+    }
+
     if (_selectedPeriod == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(AppLocalizations.of(context).xboardPleaseSelectPaymentPeriod)),
@@ -148,9 +132,47 @@ class _PlanPurchasePageState extends ConsumerState<PlanPurchasePage> {
     }
     try {
       String? tradeNo;
-      XBoardLogger.debug('[FlClash] [确认购买] 开始购买流程，套餐ID: ${widget.plan.id}, 周期: $_selectedPeriod');
+      XBoardLogger.debug('[FlClash] [确认购买] 开始购买流程，套餐ID: ${plan.id}, 周期: $_selectedPeriod');
+
+      // Step 1: Create order first (without showing overlay)
+      XBoardLogger.debug('[FlClash] [确认购买] 步骤1: 开始创建订单');
+      XBoardLogger.debug('[FlClash] [确认购买] 调用 createOrder 接口');
+      final paymentNotifier = ref.read(xboardPaymentProvider.notifier);
+      tradeNo = await paymentNotifier.createOrder(
+        planId: plan.id,
+        period: _selectedPeriod!,
+        couponCode: _couponCode,
+      );
+      XBoardLogger.debug('[FlClash] [确认购买] createOrder 返回结果: $tradeNo');
+      if (tradeNo == null) {
+        final errorMessage = ref.read(userUIStateProvider).errorMessage;
+        XBoardLogger.debug('[FlClash] [确认购买] 订单创建失败: $errorMessage');
+        if (!mounted) return;
+        throw Exception('${AppLocalizations.of(context).xboardOrderCreationFailed}: ${errorMessage ?? AppLocalizations.of(context).xboardOperationFailed}');
+      }
+      XBoardLogger.debug('[FlClash] [确认购买] 订单创建成功，订单号: $tradeNo');
+
+      // Step 2: Get payment methods
+      XBoardLogger.debug('[FlClash] [确认购买] 获取支付方式列表');
+      final paymentMethods = await XBoardSDK.getPaymentMethods();
+      XBoardLogger.debug('[FlClash] 支付方式获取响应: 获取到 ${paymentMethods.length} 个支付方式');
+      if (paymentMethods.isEmpty) {
+        if (!mounted) return;
+        throw Exception(AppLocalizations.of(context).xboardNoPaymentMethods);
+      }
+
+      // Step 3: Show payment method selection dialog (no overlay blocking it)
+      if (!mounted) return;
+      final selectedMethod = await _showPaymentMethodDialog(paymentMethods);
+      if (selectedMethod == null) {
+        // User cancelled - no need to show/hide overlay since it was never shown
+        return;
+      }
+
+      // Step 4: User selected a payment method - NOW show the waiting overlay
+      XBoardLogger.debug('[FlClash] 用户选择支付方式: ID=${selectedMethod.id}, Name=${selectedMethod.name}');
       if (mounted) {
-        XBoardLogger.debug('[FlClash] [确认购买] 立即显示支付等待页面');
+        XBoardLogger.debug('[FlClash] [确认购买] 显示支付等待页面');
         PaymentWaitingManager.show(
           context,
           onClose: () {
@@ -160,7 +182,7 @@ class _PlanPurchasePageState extends ConsumerState<PlanPurchasePage> {
             XBoardLogger.debug('[支付成功] ===== 收到支付成功回调 =====');
             XBoardLogger.debug('[支付成功] 当前页面是否已挂载: $mounted');
             XBoardLogger.debug('[支付成功] 开始刷新订阅信息');
-            
+
             try {
               final userProvider = ref.read(xboardUserProvider.notifier);
               XBoardLogger.debug('[支付成功] 获取到 xboardUserProvider: $userProvider');
@@ -169,7 +191,7 @@ class _PlanPurchasePageState extends ConsumerState<PlanPurchasePage> {
             } catch (e) {
               XBoardLogger.debug('[支付成功] 刷新订阅信息时出错: $e');
             }
-            
+
             XBoardLogger.debug('[支付成功] 准备延迟300ms后导航');
             Future.delayed(const Duration(milliseconds: 300), () {
               XBoardLogger.debug('[支付成功] 延迟结束，检查页面挂载状态: $mounted');
@@ -186,38 +208,14 @@ class _PlanPurchasePageState extends ConsumerState<PlanPurchasePage> {
               }
             });
           },
-          tradeNo: null, // 初始时还没有订单号
+          tradeNo: tradeNo,
         );
         PaymentWaitingManager.updateStep(PaymentStep.cancelingOrders);
       }
-      XBoardLogger.debug('[FlClash] [确认购买] 步骤1: 开始创建订单');
-      PaymentWaitingManager.updateStep(PaymentStep.createOrder);
-      XBoardLogger.debug('[FlClash] [确认购买] 调用 createOrder 接口');
-      final paymentNotifier = ref.read(xboardPaymentProvider.notifier);
-      tradeNo = await paymentNotifier.createOrder(
-        planId: widget.plan.id,
-        period: _selectedPeriod!,
-        couponCode: _couponCode,
-      );
-      XBoardLogger.debug('[FlClash] [确认购买] createOrder 返回结果: $tradeNo');
-      if (tradeNo == null) {
-        final errorMessage = ref.read(userUIStateProvider).errorMessage;
-        XBoardLogger.debug('[FlClash] [确认购买] 订单创建失败: $errorMessage');
-        throw Exception('${AppLocalizations.of(context).xboardOrderCreationFailed}: ${errorMessage ?? AppLocalizations.of(context).xboardOperationFailed}');
-      }
-      XBoardLogger.debug('[FlClash] [确认购买] 订单创建成功，订单号: $tradeNo');
-      PaymentWaitingManager.updateTradeNo(tradeNo);
+
+      // Step 5: Continue with payment processing
       XBoardLogger.debug('[FlClash] [确认购买] 步骤2: 开始加载支付页面');
       PaymentWaitingManager.updateStep(PaymentStep.loadingPayment);
-      XBoardLogger.debug('[FlClash] [确认购买] 获取支付方式列表');
-      final paymentMethods = await XBoardSDK.getPaymentMethods();
-      XBoardLogger.debug('[FlClash] 支付方式获取响应: 获取到 ${paymentMethods.length} 个支付方式');
-      if (paymentMethods.isEmpty) {
-        throw Exception('暂无可用的支付方式');
-      }
-      final firstPaymentMethod = paymentMethods.first;
-      XBoardLogger.debug('[FlClash] 支付方式获取成功，数量: ${paymentMethods.length}');
-      XBoardLogger.debug('[FlClash] 选择第一个支付方式: ID=${firstPaymentMethod.id}, Name=${firstPaymentMethod.name}');
       XBoardLogger.debug('[FlClash] [确认购买] 步骤3: 验证支付方式');
       PaymentWaitingManager.updateStep(PaymentStep.verifyPayment);
       XBoardLogger.debug('[FlClash] [确认购买] 检查订单状态...');
@@ -231,12 +229,12 @@ class _PlanPurchasePageState extends ConsumerState<PlanPurchasePage> {
       } catch (e) {
         XBoardLogger.debug('[FlClash] [确认购买] 订单状态检查失败: $e');
       }
-      XBoardLogger.debug('[FlClash] [确认购买] 开始创建支付网关，订单号: $tradeNo, 支付方式: ${firstPaymentMethod.id}');
+      XBoardLogger.debug('[FlClash] [确认购买] 开始创建支付网关，订单号: $tradeNo, 支付方式: ${selectedMethod.id}');
       XBoardLogger.debug('[FlClash] [确认购买] 使用 PaymentProvider 提交支付');
-      XBoardLogger.debug('[FlClash] [确认购买] 支付方式ID类型: ${firstPaymentMethod.id.runtimeType}, 值: ${firstPaymentMethod.id}');
+      XBoardLogger.debug('[FlClash] [确认购买] 支付方式ID类型: ${selectedMethod.id.runtimeType}, 值: ${selectedMethod.id}');
       final paymentUrl = await paymentNotifier.submitPayment(
         tradeNo: tradeNo,
-        method: firstPaymentMethod.id.toString(),
+        method: selectedMethod.id.toString(),
       );
       XBoardLogger.debug('[FlClash] [确认购买] 支付提交完成，支付链接: $paymentUrl');
       if (mounted) {
@@ -248,10 +246,11 @@ class _PlanPurchasePageState extends ConsumerState<PlanPurchasePage> {
           
           // 打开支付链接
           await _launchPaymentUrl(paymentUrl, tradeNo);
-          
+
           XBoardLogger.debug('[FlClash] [确认购买] 支付链接已打开，等待用户完成支付');
         } else {
-          throw Exception('支付失败: 未获取到支付链接');
+          if (!mounted) return;
+          throw Exception(AppLocalizations.of(context).xboardPaymentFailed);
         }
       }
     } catch (e) {
@@ -262,7 +261,7 @@ class _PlanPurchasePageState extends ConsumerState<PlanPurchasePage> {
         PaymentWaitingManager.hide();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('操作失败: ${e.toString()}'),
+            content: Text('${AppLocalizations.of(context).xboardOperationFailed}: ${e.toString()}'),
             backgroundColor: Colors.red,
           ),
         );
@@ -275,14 +274,16 @@ class _PlanPurchasePageState extends ConsumerState<PlanPurchasePage> {
         await Clipboard.setData(ClipboardData(text: url));
         final uri = Uri.parse(url);
         if (!await canLaunchUrl(uri)) {
-          throw Exception('无法打开支付链接');
+          if (!mounted) return;
+          throw Exception(AppLocalizations.of(context).xboardCannotOpenPaymentLink);
         }
         final launched = await launchUrl(
           uri,
           mode: LaunchMode.externalApplication,
         );
         if (!launched) {
-          throw Exception('无法启动外部浏览器');
+          if (!mounted) return;
+          throw Exception(AppLocalizations.of(context).xboardCannotLaunchBrowser);
         }
         XBoardLogger.debug('[FlClash] 支付页面已在浏览器中打开，订单号: $tradeNo');
         XBoardLogger.debug('[FlClash] 支付链接已复制到剪贴板');
@@ -292,7 +293,7 @@ class _PlanPurchasePageState extends ConsumerState<PlanPurchasePage> {
         PaymentWaitingManager.hide();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('打开支付页面失败: ${e.toString()}'),
+            content: Text(AppLocalizations.of(context).xboardOpenPaymentPageFailed(e.toString())),
             backgroundColor: Colors.red,
           ),
         );
@@ -301,119 +302,119 @@ class _PlanPurchasePageState extends ConsumerState<PlanPurchasePage> {
   }
   Widget _buildPeriodSelector() {
     final periods = _getAvailablePeriods(context);
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              AppLocalizations.of(context).xboardSelectPaymentPeriod,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+    final screenWidth = MediaQuery.of(context).size.width;
+    final cardWidth = ((screenWidth - 64) / 2).clamp(140.0, 300.0);
+
+    return Wrap(
+      spacing: 16,
+      runSpacing: 16,
+      children: periods.map((period) {
+        final isSelected = _selectedPeriod == period['period'];
+        final discount = _calculateDiscount(period);
+
+        return InkWell(
+          onTap: () {
+            setState(() {
+              _selectedPeriod = period['period'];
+            });
+          },
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            width: cardWidth,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: isSelected ? const Color(0xFF2D4A5C) : const Color(0xFF1A2332),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: isSelected ? const Color(0xFF6FCF97) : const Color(0xFF2B3544),
+                width: isSelected ? 2 : 1,
               ),
             ),
-            const SizedBox(height: 16),
-            ...periods.map((period) {
-              final isSelected = _selectedPeriod == period['period'];
-              return Container(
-                margin: const EdgeInsets.only(bottom: 8),
-                child: InkWell(
-                  onTap: () {
-                    setState(() {
-                      _selectedPeriod = period['period'];
-                    });
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: isSelected ? Colors.blue : Colors.grey.shade300,
-                        width: isSelected ? 2 : 1,
-                      ),
-                      borderRadius: BorderRadius.circular(8),
-                      color: isSelected ? Colors.blue.shade50 : null,
-                    ),
-                    child: Row(
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
                       children: [
                         Icon(
                           isSelected ? Icons.radio_button_checked : Icons.radio_button_unchecked,
-                          color: isSelected ? Colors.blue : Colors.grey,
+                          color: isSelected ? const Color(0xFF6FCF97) : const Color(0xFF6B7785),
+                          size: 20,
                         ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: 8),
                         Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                period['label'],
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: isSelected ? Colors.blue.shade800 : null,
-                                ),
-                              ),
-                              Text(
-                                period['description'],
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.grey.shade600,
-                                ),
-                              ),
-                            ],
+                          child: Text(
+                            period['label'],
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                              color: isSelected ? Colors.white : const Color(0xFFB0B8C1),
+                            ),
                           ),
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            if (isSelected && _finalPrice != null) ...[
-                              Text(
-                                _formatPrice(period['price']),
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  decoration: TextDecoration.lineThrough,
-                                  decorationColor: Colors.red.shade400,
-                                  decorationThickness: 2.0,
-                                  color: Colors.grey.shade600,
-                                ),
-                              ),
-                              Text(
-                                _formatPrice(_finalPrice!),
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.green.shade700,
-                                ),
-                              ),
-                            ] else
-                              Text(
-                                _formatPrice(period['price']),
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: isSelected ? Colors.blue.shade800 : Colors.green.shade700,
-                                ),
-                              ),
-                          ],
                         ),
                       ],
                     ),
-                  ),
+                    const SizedBox(height: 12),
+                    Text(
+                      _formatPrice(period['price']),
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        color: isSelected ? const Color(0xFF6FCF97) : Colors.white,
+                      ),
+                    ),
+                  ],
                 ),
-              );
-            }),
-          ],
-        ),
-      ),
+                if (discount > 0)
+                  Positioned(
+                    top: -8,
+                    right: -8,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFFFF6B35), Color(0xFFFF8C42)],
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        '-${discount.toInt()}%',
+                        style: const TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        );
+      }).toList(),
     );
+  }
+
+  int _calculateDiscount(Map<String, dynamic> period) {
+    // Calculate discount based on period
+    switch (period['period']) {
+      case 'quarter_price':
+        return 10;
+      case 'half_year_price':
+        return 25;
+      case 'year_price':
+        return 33;
+      default:
+        return 0;
+    }
   }
   Future<void> _validateCoupon() async {
     if (_couponController.text.trim().isEmpty) {
       if (mounted) {
         setState(() {
           _isCouponValid = null;
-          _couponErrorMessage = null;
           _discountAmount = null;
           _finalPrice = null;
           _couponCode = null;
@@ -425,34 +426,30 @@ class _PlanPurchasePageState extends ConsumerState<PlanPurchasePage> {
       setState(() {
         _isCouponValidating = true;
         _isCouponValid = null;
-        _couponErrorMessage = null;
       });
     }
     try {
+      final plan = ref.read(selectedPlanProvider);
+      if (plan == null) return;
+
       final couponCode = _couponController.text.trim();
       final isValid = await XBoardSDK.checkCoupon(
         code: couponCode,
-        planId: widget.plan.id,
+        planId: plan.id,
       );
       if (isValid) {
-        // TODO: 需要从SDK获取完整的优惠券数据以计算折扣
-        // 目前API只返回是否有效，无法计算具体折扣金额
-        // 暂时只标记为有效，不计算折扣
         if (mounted) {
           setState(() {
             _isCouponValid = true;
             _couponCode = couponCode;
-            // 无法计算折扣金额，暂时设为null
             _discountAmount = null;
             _finalPrice = null;
-            _couponErrorMessage = null;
           });
         }
       } else {
         if (mounted) {
           setState(() {
             _isCouponValid = false;
-            _couponErrorMessage = AppLocalizations.of(context).xboardInvalidOrExpiredCoupon;
             _discountAmount = null;
             _finalPrice = null;
             _couponCode = null;
@@ -463,7 +460,6 @@ class _PlanPurchasePageState extends ConsumerState<PlanPurchasePage> {
       if (mounted) {
         setState(() {
           _isCouponValid = false;
-          _couponErrorMessage = '${AppLocalizations.of(context).xboardValidationFailed}: ${e.toString()}';
           _discountAmount = null;
           _finalPrice = null;
           _couponCode = null;
@@ -487,279 +483,203 @@ class _PlanPurchasePageState extends ConsumerState<PlanPurchasePage> {
     );
     return selectedPeriod['price']?.toDouble() ?? 0.0;
   }
-  Widget _buildBalanceTip() {
-    if (_isLoadingBalance || _userBalance == null) {
-      return const SizedBox.shrink(); // 加载中或失败时不显示
-    }
+
+  Widget _buildCouponSection() {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: _userBalance! > 0 ? Colors.blue.shade50 : Colors.grey.shade50,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: _userBalance! > 0 ? Colors.blue.shade200 : Colors.grey.shade300,
-        ),
+        color: const Color(0xFF1A2332),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFF2B3544), width: 1),
       ),
-      child: Row(
+      padding: const EdgeInsets.all(20),
+      child: Column(
         children: [
-          Icon(
-            Icons.account_balance_wallet,
-            color: _userBalance! > 0 ? Colors.blue.shade600 : Colors.grey.shade600,
-            size: 20,
+          Container(
+            decoration: BoxDecoration(
+              color: const Color(0xFF0F1621),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: _isCouponValid == false
+                    ? Colors.red.shade300
+                    : _isCouponValid == true
+                        ? const Color(0xFF6FCF97)
+                        : const Color(0xFF2B3544),
+                width: 1,
+              ),
+            ),
+            child: TextField(
+              controller: _couponController,
+              style: const TextStyle(color: Colors.white, fontSize: 15),
+              decoration: InputDecoration(
+                border: InputBorder.none,
+                hintText: AppLocalizations.of(context).xboardEnterCouponCode,
+                hintStyle: const TextStyle(
+                  color: Color(0xFF6B7785),
+                  fontSize: 15,
+                ),
+                prefixIcon: Icon(
+                  Icons.local_offer_outlined,
+                  color: _isCouponValid == false
+                      ? Colors.red.shade400
+                      : _isCouponValid == true
+                          ? const Color(0xFF6FCF97)
+                          : const Color(0xFF6B7785),
+                  size: 20,
+                ),
+                suffixIcon: _isCouponValid != null
+                    ? Icon(
+                        _isCouponValid! ? Icons.check_circle : Icons.cancel,
+                        color: _isCouponValid! ? const Color(0xFF6FCF97) : Colors.red,
+                        size: 20,
+                      )
+                    : null,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
+              ),
+              onChanged: (value) {
+                if (_isCouponValid != null) {
+                  setState(() {
+                    _isCouponValid = null;
+                    _discountAmount = null;
+                    _finalPrice = null;
+                    _couponCode = null;
+                  });
+                }
+              },
+            ),
           ),
-          const SizedBox(width: 8),
-          Text(
-            '${AppLocalizations.of(context).xboardAccountBalance}: ${_formatPrice(_userBalance!)}',
-            style: TextStyle(
-              fontSize: 14,
-              color: _userBalance! > 0 ? Colors.blue.shade800 : Colors.grey.shade600,
-              fontWeight: FontWeight.w500,
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            height: 48,
+            child: ElevatedButton(
+              onPressed: _isCouponValidating ? null : _validateCoupon,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF6FCF97),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                elevation: 0,
+              ),
+              child: _isCouponValidating
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      ),
+                    )
+                  : Text(
+                      AppLocalizations.of(context).xboardApply,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15,
+                      ),
+                    ),
             ),
           ),
         ],
       ),
     );
   }
-  Widget _buildCouponSection() {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                const Icon(Icons.local_offer, color: Colors.orange),
-                const SizedBox(width: 8),
-                Text(
-                  AppLocalizations.of(context).xboardCouponOptional,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                if (_isCouponValid == true) ...[
-                  const Spacer(),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.green.shade100,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.green.shade300),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.check_circle, color: Colors.green.shade700, size: 16),
-                        const SizedBox(width: 4),
-                        Text(
-                          '-¥${_discountAmount?.toStringAsFixed(2)}',
-                          style: TextStyle(
-                            color: Colors.green.shade700,
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ],
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: _isCouponValid == false 
-                            ? Colors.red.shade300 
-                            : _isCouponValid == true 
-                                ? Colors.green.shade300 
-                                : Colors.grey.shade300,
-                        width: 1.5,
-                      ),
-                    ),
-                    child: TextField(
-                      controller: _couponController,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: AppLocalizations.of(context).xboardEnterCouponCode,
-                        prefixIcon: Icon(
-                          Icons.local_offer,
-                          color: _isCouponValid == false 
-                              ? Colors.red.shade400 
-                              : _isCouponValid == true 
-                                  ? Colors.green.shade400 
-                                  : Colors.grey.shade400,
-                        ),
-                        suffixIcon: _isCouponValid != null
-                            ? Icon(
-                                _isCouponValid! ? Icons.check_circle : Icons.cancel,
-                                color: _isCouponValid! ? Colors.green : Colors.red,
-                              )
-                            : null,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 14,
-                        ),
-                      ),
-                      onChanged: (value) {
-                        if (_isCouponValid != null) {
-                          setState(() {
-                            _isCouponValid = null;
-                            _couponErrorMessage = null;
-                            _discountAmount = null;
-                            _finalPrice = null;
-                            _couponCode = null;
-                          });
-                        }
-                      },
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                SizedBox(
-                  height: 48,
-                  child: ElevatedButton(
-                    onPressed: _isCouponValidating ? null : _validateCoupon,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.orange,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                    ),
-                    child: _isCouponValidating
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                            ),
-                          )
-                        : Text(
-                            AppLocalizations.of(context).xboardVerify,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                  ),
-                ),
-              ],
-            ),
-            if (_couponErrorMessage != null) ...[
-              const SizedBox(height: 8),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.red.shade50,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.red.shade200),
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.error_outline, color: Colors.red.shade600, size: 16),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        _couponErrorMessage!,
-                        style: TextStyle(
-                          color: Colors.red.shade700,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
   @override
   Widget build(BuildContext context) {
-    return CommonScaffold(
-      title: AppLocalizations.of(context).xboardPurchaseSubscription,
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+    final plan = ref.watch(selectedPlanProvider);
+    if (plan == null) {
+      return Scaffold(
+        backgroundColor: const Color(0xFF0B0E14),
+        body: Center(child: Text(AppLocalizations.of(context).xboardPlanNotFound, style: const TextStyle(color: Colors.white))),
+      );
+    }
+
+    return Scaffold(
+      backgroundColor: const Color(0xFF0B0E14),
+      body: Column(
+        children: [
+          // Custom header with back button
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: const BoxDecoration(
+              color: Color(0xFF0B0E14),
+              border: Border(
+                bottom: BorderSide(
+                  color: Color(0xFF2B3544),
+                  width: 1,
+                ),
+              ),
+            ),
+            child: Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.arrow_back, color: Colors.white),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  AppLocalizations.of(context).xboardCreateOrder,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        const Icon(Icons.star, color: Colors.orange),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            widget.plan.name,
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        const Icon(Icons.data_usage, color: Colors.green),
-                        const SizedBox(width: 8),
-                        Text(
-                          '${AppLocalizations.of(context).xboardTraffic}: ${_formatTraffic(widget.plan.transferEnable)}',
-                          style: const TextStyle(fontSize: 12),
-                        ),
-                        const SizedBox(width: 24),
-                        if ((widget.plan.speedLimit ?? 0) > 0) ...[
-                          const Icon(Icons.speed, color: Colors.orange),
-                          const SizedBox(width: 8),
-                          Text(
-                            '${AppLocalizations.of(context).xboardSpeedLimit}: ${widget.plan.speedLimit}Mbps',
-                            style: const TextStyle(fontSize: 12),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ],
-                ),
+            Text(
+              AppLocalizations.of(context).xboardSelectAPlan,
+              style: const TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 20),
+            _buildSelectedPlanCard(plan),
+            const SizedBox(height: 28),
+            Text(
+              AppLocalizations.of(context).xboardSelectPeriod,
+              style: const TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
               ),
             ),
             const SizedBox(height: 16),
             _buildPeriodSelector(),
-            const SizedBox(height: 16),
+            const SizedBox(height: 24),
             _buildCouponSection(),
             const SizedBox(height: 24),
-            _buildBalanceTip(),
+            _buildPriceSummary(),
+            const SizedBox(height: 28),
             SizedBox(
               width: double.infinity,
-              height: 48,
+              height: 56,
               child: Consumer(
                 builder: (context, ref, child) {
                   final paymentState = ref.watch(userUIStateProvider);
                   return ElevatedButton(
-                    onPressed: paymentState.isLoading 
-                        ? null 
+                    onPressed: paymentState.isLoading
+                        ? null
                         : () => _proceedToPurchase(),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
+                      backgroundColor: const Color(0xFF6FCF97),
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(12),
                       ),
+                      elevation: 0,
                     ),
                     child: paymentState.isLoading
                         ? Row(
@@ -777,12 +697,23 @@ class _PlanPurchasePageState extends ConsumerState<PlanPurchasePage> {
                               Text(AppLocalizations.of(context).xboardProcessing),
                             ],
                           )
-                        : Text(
-                            AppLocalizations.of(context).xboardConfirmPurchase,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.credit_card, size: 20),
+                              const SizedBox(width: 8),
+                              Flexible(
+                                child: Text(
+                                  AppLocalizations.of(context).xboardSelectPaymentMethod,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
                           ),
                   );
                 },
@@ -790,6 +721,355 @@ class _PlanPurchasePageState extends ConsumerState<PlanPurchasePage> {
             ),
           ],
         ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSelectedPlanCard(PlanData plan) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF6FCF97), Color(0xFF4DB8A0)],
+        ),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
+                  plan.name.toUpperCase(),
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                style: TextButton.styleFrom(
+                  backgroundColor: const Color(0xFF1E2A3A),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: Text(
+                  AppLocalizations.of(context).xboardChange,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
+            children: [
+              const Text(
+                '¥',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                ),
+              ),
+              Text(
+                _getLowestPrice(plan).replaceAll('¥', ''),
+                style: const TextStyle(
+                  fontSize: 36,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                  height: 1.0,
+                ),
+              ),
+              const SizedBox(width: 6),
+              Text(
+                AppLocalizations.of(context).xboardPerMonth,
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 12,
+            runSpacing: 8,
+            children: [
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.data_usage_rounded, size: 16, color: Colors.white),
+                  const SizedBox(width: 6),
+                  Text(
+                    _formatTraffic(plan.transferEnable),
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.speed_rounded, size: 16, color: Colors.white),
+                  const SizedBox(width: 6),
+                  Text(
+                    '${plan.speedLimit ?? 100} ${AppLocalizations.of(context).xboardMbps}',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.devices_rounded, size: 16, color: Colors.white),
+                  const SizedBox(width: 6),
+                  Flexible(
+                    child: Text(
+                      plan.deviceLimit != null && plan.deviceLimit! > 0
+                          ? '${plan.deviceLimit} ${AppLocalizations.of(context).xboardDevices}'
+                          : AppLocalizations.of(context).xboardUnlimited,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _getLowestPrice(PlanData plan) {
+    List<double> prices = [];
+    if (plan.monthPrice != null) prices.add(plan.monthPrice!);
+    if (plan.quarterPrice != null) prices.add(plan.quarterPrice!);
+    if (plan.halfYearPrice != null) prices.add(plan.halfYearPrice!);
+    if (plan.yearPrice != null) prices.add(plan.yearPrice!);
+    if (plan.twoYearPrice != null) prices.add(plan.twoYearPrice!);
+    if (plan.threeYearPrice != null) prices.add(plan.threeYearPrice!);
+    if (plan.onetimePrice != null) prices.add(plan.onetimePrice!);
+    if (prices.isEmpty) return '-';
+    final lowestPrice = prices.reduce((a, b) => a < b ? a : b);
+    return lowestPrice.toStringAsFixed(2);
+  }
+
+  Future<PaymentMethod?> _showPaymentMethodDialog(
+    List<PaymentMethod> paymentMethods,
+  ) {
+    return showModalBottomSheet<PaymentMethod>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) {
+        return Container(
+          decoration: const BoxDecoration(
+            color: Color(0xFF1A2332),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 20),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF2B3544),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              Text(
+                AppLocalizations.of(context).xboardSelectPaymentMethod,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 16),
+              ...paymentMethods.map((method) {
+                return InkWell(
+                  onTap: () => Navigator.of(context).pop(method),
+                  borderRadius: BorderRadius.circular(12),
+                  child: Container(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF0F1621),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: const Color(0xFF2B3544), width: 1),
+                    ),
+                    child: Row(
+                      children: [
+                        if (method.icon != null && method.icon!.isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.only(right: 12),
+                            child: Image.network(
+                              method.icon!,
+                              width: 28,
+                              height: 28,
+                              errorBuilder: (_, __, ___) => const Icon(
+                                Icons.payment,
+                                color: Colors.white,
+                                size: 28,
+                              ),
+                            ),
+                          )
+                        else
+                          const Padding(
+                            padding: EdgeInsets.only(right: 12),
+                            child: Icon(
+                              Icons.payment,
+                              color: Colors.white,
+                              size: 28,
+                            ),
+                          ),
+                        Expanded(
+                          child: Text(
+                            method.name,
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                        const Icon(
+                          Icons.chevron_right,
+                          color: Color(0xFF6B7785),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildPriceSummary() {
+    final currentPrice = _getCurrentPrice();
+    final discount = _discountAmount ?? 0.0;
+    final finalAmount = _finalPrice ?? currentPrice;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFF1A2332),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFF2B3544), width: 1),
+      ),
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                AppLocalizations.of(context).xboardOriginalPrice,
+                style: const TextStyle(
+                  fontSize: 15,
+                  color: Color(0xFFB0B8C1),
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              Text(
+                _formatPrice(currentPrice),
+                style: const TextStyle(
+                  fontSize: 15,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                AppLocalizations.of(context).xboardDiscount,
+                style: const TextStyle(
+                  fontSize: 15,
+                  color: Color(0xFFB0B8C1),
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              Text(
+                _formatPrice(discount),
+                style: const TextStyle(
+                  fontSize: 15,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          const Divider(color: Color(0xFF2B3544), height: 1),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                AppLocalizations.of(context).xboardAmountToPay,
+                style: const TextStyle(
+                  fontSize: 17,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              Text(
+                _formatPrice(finalAmount),
+                style: const TextStyle(
+                  fontSize: 20,
+                  color: Color(0xFF6FCF97),
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

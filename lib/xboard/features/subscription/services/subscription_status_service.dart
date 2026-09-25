@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:fl_clash/xboard/sdk/xboard_sdk.dart';
-import 'package:fl_clash/models/models.dart' as fl_models;
-import 'package:fl_clash/l10n/l10n.dart';
-import 'package:fl_clash/xboard/features/auth/auth.dart';
+import 'package:mitveepn/xboard/sdk/xboard_sdk.dart';
+import 'package:mitveepn/models/models.dart' as fl_models;
+import 'package:mitveepn/l10n/l10n.dart';
+import 'package:mitveepn/xboard/features/auth/auth.dart';
 enum SubscriptionStatusType {
   valid,
   noSubscription,

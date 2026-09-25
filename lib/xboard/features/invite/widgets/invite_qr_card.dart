@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/xboard/features/invite/providers/invite_provider.dart';
-import 'package:fl_clash/xboard/config/xboard_config.dart';
-import 'package:fl_clash/xboard/features/invite/widgets/qr_code_widget.dart';
+import 'package:mitveepn/common/common.dart';
+import 'package:mitveepn/xboard/features/invite/providers/invite_provider.dart';
+import 'package:mitveepn/xboard/config/xboard_config.dart';
+import 'package:mitveepn/xboard/features/invite/widgets/qr_code_widget.dart';
 
 class InviteQrCard extends ConsumerWidget {
   const InviteQrCard({super.key});

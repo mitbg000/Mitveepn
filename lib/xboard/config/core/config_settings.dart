@@ -142,6 +142,7 @@ class RemoteSourceConfig {
   final Map<String, String>? headers;
   final Duration? timeout;
   final String? encryptionKey; // 加密密钥（用于gitee源）
+  final int priority; // 优先级，数字越大越先尝试
 
   const RemoteSourceConfig({
     required this.name,
@@ -149,6 +150,7 @@ class RemoteSourceConfig {
     this.headers,
     this.timeout,
     this.encryptionKey,
+    this.priority = 0,
   });
 
   factory RemoteSourceConfig.fromJson(Map<String, dynamic> json) {
@@ -161,6 +163,7 @@ class RemoteSourceConfig {
       headers: headersData?.cast<String, String>(),
       timeout: timeoutSeconds != null ? Duration(seconds: timeoutSeconds) : null,
       encryptionKey: json['encryptionKey'] as String?,
+      priority: json['priority'] as int? ?? 0,
     );
   }
 
@@ -171,6 +174,7 @@ class RemoteSourceConfig {
       if (headers != null) 'headers': headers,
       if (timeout != null) 'timeoutSeconds': timeout!.inSeconds,
       if (encryptionKey != null) 'encryptionKey': encryptionKey,
+      'priority': priority,
     };
   }
 

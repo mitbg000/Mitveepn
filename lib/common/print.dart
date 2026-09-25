@@ -1,5 +1,5 @@
-import 'package:fl_clash/models/models.dart';
-import 'package:fl_clash/state.dart';
+import 'package:mitveepn/models/models.dart';
+import 'package:mitveepn/state.dart';
 import 'package:flutter/cupertino.dart';
 
 class CommonPrint {
@@ -13,7 +13,7 @@ class CommonPrint {
   }
 
   log(String? text) {
-    final payload = "[FlClash] $text";
+    final payload = "[Mitveepn] $text";
     debugPrint(payload);
     if (!globalState.isInit) {
       return;

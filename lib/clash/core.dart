@@ -3,12 +3,12 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:isolate';
 
-import 'package:fl_clash/clash/clash.dart';
-import 'package:fl_clash/clash/interface.dart';
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/models/models.dart';
-import 'package:fl_clash/state.dart';
+import 'package:mitveepn/clash/clash.dart';
+import 'package:mitveepn/clash/interface.dart';
+import 'package:mitveepn/common/common.dart';
+import 'package:mitveepn/enum/enum.dart';
+import 'package:mitveepn/models/models.dart';
+import 'package:mitveepn/state.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart';
 

@@ -3,8 +3,8 @@ import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/enum/enum.dart';
+import 'package:mitveepn/common/common.dart';
+import 'package:mitveepn/enum/enum.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -217,8 +217,11 @@ class Utils {
         .toList();
   }
 
-  ViewMode getViewMode(double viewWidth) {
-    if (viewWidth <= maxMobileWidth) return ViewMode.mobile;
+  ViewMode getViewMode(double viewWidth, [double? viewHeight]) {
+    final isPhoneAspect = viewHeight != null &&
+        viewWidth <= 900 &&
+        viewHeight >= viewWidth * 1.15;
+    if (viewWidth <= maxMobileWidth || isPhoneAspect) return ViewMode.mobile;
     if (viewWidth <= maxLaptopWidth) return ViewMode.laptop;
     return ViewMode.desktop;
   }

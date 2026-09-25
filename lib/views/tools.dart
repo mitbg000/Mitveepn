@@ -1,22 +1,19 @@
 import 'dart:io';
 
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/l10n/l10n.dart';
-import 'package:fl_clash/models/models.dart';
-import 'package:fl_clash/providers/providers.dart';
-import 'package:fl_clash/state.dart';
-import 'package:fl_clash/views/about.dart';
-import 'package:fl_clash/views/access.dart';
-import 'package:fl_clash/views/application_setting.dart';
-import 'package:fl_clash/views/config/config.dart';
-import 'package:fl_clash/views/hotkey.dart';
-import 'package:fl_clash/widgets/widgets.dart';
+import 'package:mitveepn/common/common.dart';
+import 'package:mitveepn/l10n/l10n.dart';
+import 'package:mitveepn/models/models.dart';
+import 'package:mitveepn/providers/providers.dart';
+import 'package:mitveepn/views/access.dart';
+import 'package:mitveepn/views/application_setting.dart';
+import 'package:mitveepn/views/config/config.dart';
+import 'package:mitveepn/views/core_status_section.dart';
+import 'package:mitveepn/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' show dirname, join;
 
-import 'backup_and_recovery.dart';
 import 'developer.dart';
 import 'theme.dart';
 
@@ -61,9 +58,7 @@ class _ToolboxViewState extends ConsumerState<ToolsView> {
     return generateSection(
       title: appLocalizations.other,
       items: [
-        _DisclaimerItem(),
         if (enableDeveloperMode) _DeveloperItem(),
-        _InfoItem(),
       ],
     );
   }
@@ -74,8 +69,6 @@ class _ToolboxViewState extends ConsumerState<ToolsView> {
       items: [
         _LocaleItem(),
         _ThemeItem(),
-        _BackupItem(),
-        if (system.isDesktop) _HotkeyItem(),
         if (Platform.isWindows) _LoopbackItem(),
         if (Platform.isAndroid) _AccessItem(),
         _ConfigItem(),
@@ -92,6 +85,8 @@ class _ToolboxViewState extends ConsumerState<ToolsView> {
       ),
     );
     final items = [
+      CoreStatusSection(),
+      const Divider(height: 1, thickness: 1),
       Consumer(
         builder: (_, ref, __) {
           final state = ref.watch(moreToolsSelectorStateProvider);
@@ -120,31 +115,74 @@ class _ToolboxViewState extends ConsumerState<ToolsView> {
 class _LocaleItem extends ConsumerWidget {
   const _LocaleItem();
 
+  static const List<String> _preferredOrder = [
+    'en',
+    'zh_CN',
+    'vi',
+  ];
+
   String _getLocaleString(Locale? locale) {
     if (locale == null) return appLocalizations.defaultText;
-    return Intl.message(locale.toString());
+    switch (locale.toString()) {
+      case 'en':
+        return appLocalizations.en;
+      case 'zh_CN':
+        return appLocalizations.zh_CN;
+      case 'vi':
+        return appLocalizations.vi;
+      default:
+        return locale.toString();
+    }
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final locale =
         ref.watch(appSettingProvider.select((state) => state.locale));
-    final subTitle = locale ?? appLocalizations.defaultText;
     final currentLocale = utils.getLocaleForString(locale);
+    final supportedLocales = AppLocalizations.delegate.supportedLocales;
+
+    final localeMap = <String, Locale>{
+      for (final supportedLocale in supportedLocales)
+        supportedLocale.toString(): supportedLocale,
+    };
+    final sortedSupportedLocales = <Locale>[
+      for (final code in _preferredOrder)
+        if (localeMap[code] != null) localeMap[code]!,
+      for (final supportedLocale in supportedLocales)
+        if (!_preferredOrder.contains(supportedLocale.toString()))
+          supportedLocale,
+    ];
+
+    Locale? supportedCurrentLocale;
+    if (currentLocale != null) {
+      for (final supportedLocale in supportedLocales) {
+        if (supportedLocale.toString() == currentLocale.toString()) {
+          supportedCurrentLocale = supportedLocale;
+          break;
+        }
+      }
+      supportedCurrentLocale ??= supportedLocales
+          .cast<Locale?>()
+          .firstWhere(
+            (l) => l?.languageCode == currentLocale.languageCode,
+            orElse: () => null,
+          );
+    }
     return ListItem<Locale?>.options(
       leading: const Icon(Icons.language_outlined),
       title: Text(appLocalizations.language),
-      subtitle: Text(Intl.message(subTitle)),
+      subtitle: Text(_getLocaleString(supportedCurrentLocale)),
       delegate: OptionsDelegate(
         title: appLocalizations.language,
-        options: [null, ...AppLocalizations.delegate.supportedLocales],
+        options: [null, ...sortedSupportedLocales],
         onChanged: (Locale? locale) {
           ref.read(appSettingProvider.notifier).updateState(
                 (state) => state.copyWith(locale: locale?.toString()),
               );
         },
         textBuilder: (locale) => _getLocaleString(locale),
-        value: currentLocale,
+        value: supportedCurrentLocale,
       ),
     );
   }
@@ -162,40 +200,6 @@ class _ThemeItem extends StatelessWidget {
       delegate: OpenDelegate(
         title: appLocalizations.theme,
         widget: const ThemeView(),
-      ),
-    );
-  }
-}
-
-class _BackupItem extends StatelessWidget {
-  const _BackupItem();
-
-  @override
-  Widget build(BuildContext context) {
-    return ListItem.open(
-      leading: const Icon(Icons.cloud_sync),
-      title: Text(appLocalizations.backupAndRecovery),
-      subtitle: Text(appLocalizations.backupAndRecoveryDesc),
-      delegate: OpenDelegate(
-        title: appLocalizations.backupAndRecovery,
-        widget: const BackupAndRecovery(),
-      ),
-    );
-  }
-}
-
-class _HotkeyItem extends StatelessWidget {
-  const _HotkeyItem();
-
-  @override
-  Widget build(BuildContext context) {
-    return ListItem.open(
-      leading: const Icon(Icons.keyboard),
-      title: Text(appLocalizations.hotkeyManagement),
-      subtitle: Text(appLocalizations.hotkeyManagementDesc),
-      delegate: OpenDelegate(
-        title: appLocalizations.hotkeyManagement,
-        widget: const HotKeyView(),
       ),
     );
   }
@@ -266,41 +270,6 @@ class _SettingItem extends StatelessWidget {
       delegate: OpenDelegate(
         title: appLocalizations.application,
         widget: const ApplicationSettingView(),
-      ),
-    );
-  }
-}
-
-class _DisclaimerItem extends StatelessWidget {
-  const _DisclaimerItem();
-
-  @override
-  Widget build(BuildContext context) {
-    return ListItem(
-      leading: const Icon(Icons.gavel),
-      title: Text(appLocalizations.disclaimer),
-      onTap: () async {
-        final isDisclaimerAccepted =
-            await globalState.appController.showDisclaimer();
-        if (!isDisclaimerAccepted) {
-          globalState.appController.handleExit();
-        }
-      },
-    );
-  }
-}
-
-class _InfoItem extends StatelessWidget {
-  const _InfoItem();
-
-  @override
-  Widget build(BuildContext context) {
-    return ListItem.open(
-      leading: const Icon(Icons.info),
-      title: Text(appLocalizations.about),
-      delegate: OpenDelegate(
-        title: appLocalizations.about,
-        widget: const AboutView(),
       ),
     );
   }

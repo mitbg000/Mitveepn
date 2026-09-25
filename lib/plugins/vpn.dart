@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:fl_clash/clash/clash.dart';
-import 'package:fl_clash/models/models.dart';
-import 'package:fl_clash/state.dart';
+import 'package:mitveepn/clash/clash.dart';
+import 'package:mitveepn/models/models.dart';
+import 'package:mitveepn/state.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 

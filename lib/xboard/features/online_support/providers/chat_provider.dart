@@ -1,13 +1,13 @@
 import 'dart:async';
 
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/state.dart';
-import 'package:fl_clash/xboard/core/core.dart';
-import 'package:fl_clash/xboard/features/online_support/models/message_model.dart';
-import 'package:fl_clash/xboard/features/online_support/pages/online_support_page.dart';
-import 'package:fl_clash/xboard/features/online_support/services/api_service.dart';
-import 'package:fl_clash/xboard/features/online_support/services/service_config.dart';
-import 'package:fl_clash/xboard/features/online_support/services/websocket_service.dart';
+import 'package:mitveepn/common/common.dart';
+import 'package:mitveepn/state.dart';
+import 'package:mitveepn/xboard/core/core.dart';
+import 'package:mitveepn/xboard/features/online_support/models/message_model.dart';
+import 'package:mitveepn/xboard/features/online_support/pages/online_support_page.dart';
+import 'package:mitveepn/xboard/features/online_support/services/api_service.dart';
+import 'package:mitveepn/xboard/features/online_support/services/service_config.dart';
+import 'package:mitveepn/xboard/features/online_support/services/websocket_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

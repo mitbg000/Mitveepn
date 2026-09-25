@@ -1,11 +1,11 @@
 import 'dart:io';
-import 'package:fl_clash/xboard/core/core.dart';
-import 'package:fl_clash/xboard/config/xboard_config.dart';
+import 'package:mitveepn/xboard/core/core.dart';
+import 'package:mitveepn/xboard/config/xboard_config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:fl_clash/common/common.dart';
+import 'package:mitveepn/common/common.dart';
 
 class UpdateService {
   /// Get the best update server URL from configuration

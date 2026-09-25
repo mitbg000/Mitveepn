@@ -10,7 +10,7 @@
 ///
 /// 使用示例：
 /// ```dart
-/// import 'package:fl_clash/xboard/sdk/xboard_sdk.dart';
+/// import 'package:mitveepn/xboard/sdk/xboard_sdk.dart';
 ///
 /// // 1. 初始化（通过配置提供者）
 /// await XBoardSDK.initialize(configProvider: XBoardConfig);
@@ -24,8 +24,8 @@ library;
 
 import 'src/xboard_client.dart';
 import 'package:flutter_xboard_sdk/flutter_xboard_sdk.dart' as sdk;
-import 'package:fl_clash/xboard/core/core.dart';
-import 'package:fl_clash/xboard/config/interface/config_provider_interface.dart';
+import 'package:mitveepn/xboard/core/core.dart';
+import 'package:mitveepn/xboard/config/interface/config_provider_interface.dart';
 
 // ========== 核心客户端 ==========
 export 'src/xboard_client.dart';

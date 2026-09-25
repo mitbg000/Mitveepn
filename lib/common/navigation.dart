@@ -1,14 +1,12 @@
-import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/models/models.dart';
-// import 'package:fl_clash/views/views.dart';
-import 'package:fl_clash/xboard/features/payment/pages/plans.dart';
-import 'package:fl_clash/xboard/features/subscription/pages/xboard_home_page.dart';
-import 'package:fl_clash/xboard/features/online_support/pages/online_support_page.dart';
-import 'package:fl_clash/xboard/features/online_support/providers/chat_provider.dart';
-import 'package:fl_clash/xboard/features/invite/pages/invite_page.dart';
-import 'package:fl_clash/xboard/features/shared/shared.dart';
+import 'package:mitveepn/enum/enum.dart';
+import 'package:mitveepn/models/models.dart';
+import 'package:mitveepn/views/profiles/profiles.dart';
+import 'package:mitveepn/views/proxies/proxies.dart';
+import 'package:mitveepn/views/tools.dart';
+import 'package:mitveepn/xboard/features/payment/pages/plans.dart';
+import 'package:mitveepn/xboard/features/payment/pages/plan_purchase_page.dart';
+import 'package:mitveepn/xboard/features/subscription/pages/xboard_home_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class Navigation {
   static Navigation? _instance;
@@ -18,18 +16,8 @@ class Navigation {
     bool hasProxies = false,
   }) {
     return [
-      // 暂时隐藏其他页面，只保留指定的几个页面
-      // const NavigationItem(
-      //   keep: false,
-      //   icon: Icon(Icons.space_dashboard),
-      //   label: PageLabel.dashboard,
-      //   view: DashboardView(
-      //     key: GlobalObjectKey(PageLabel.dashboard),
-      //   ),
-      //   modes: [], // 暂时隐藏
-      // ),
       const NavigationItem(
-        icon: Icon(Icons.home),
+        icon: Icon(Icons.space_dashboard_rounded),
         label: PageLabel.xboard,
         view: XBoardHomePage(
           key: GlobalObjectKey(
@@ -39,46 +27,51 @@ class Navigation {
         modes: [NavigationItemMode.desktop, NavigationItemMode.mobile],
       ),
       const NavigationItem(
+        icon: Icon(Icons.view_list_rounded),
+        label: PageLabel.proxies,
+        view: ProxiesView(
+          key: GlobalObjectKey(
+            PageLabel.proxies,
+          ),
+        ),
+        modes: [NavigationItemMode.desktop, NavigationItemMode.mobile],
+      ),
+      const NavigationItem(
+        icon: Icon(Icons.build_rounded),
+        label: PageLabel.tools,
+        view: ToolsView(
+          key: GlobalObjectKey(
+            PageLabel.tools,
+          ),
+        ),
+        modes: [NavigationItemMode.desktop, NavigationItemMode.mobile],
+      ),
+      const NavigationItem(
+        icon: Icon(Icons.person_rounded),
+        label: PageLabel.profiles,
+        view: ProfilesView(
+          key: GlobalObjectKey(
+            PageLabel.profiles,
+          ),
+        ),
+        modes: [NavigationItemMode.desktop, NavigationItemMode.mobile],
+      ),
+      NavigationItem(
         icon: Icon(Icons.shopping_cart),
         label: PageLabel.plans,
         view: PlansView(
-          key: GlobalObjectKey(
-            PageLabel.plans,
-          ),
+          key: GlobalObjectKey(PageLabel.plans),
         ),
-        modes: [NavigationItemMode.desktop],
+        modes: [NavigationItemMode.mobile, NavigationItemMode.desktop],
       ),
-      const NavigationItem(
-        icon: Icon(Icons.support_agent),
-        label: PageLabel.onlineSupport,
-        view: OnlineSupportPage(
-          key: GlobalObjectKey(
-            PageLabel.onlineSupport,
-          ),
+      NavigationItem(
+        icon: Icon(Icons.shopping_cart_checkout),
+        label: PageLabel.planPurchase,
+        view: PlanPurchasePage(
+          key: GlobalObjectKey(PageLabel.planPurchase),
         ),
-        modes: [NavigationItemMode.desktop], // 桌面端显示
+        modes: [], // Hidden from navigation, only accessible via page change
       ),
-      const NavigationItem(
-        icon: Icon(Icons.people),
-        label: PageLabel.invite,
-        view: InvitePage(
-          key: GlobalObjectKey(
-            PageLabel.invite,
-          ),
-        ),
-        modes: [NavigationItemMode.desktop, NavigationItemMode.mobile], // 桌面端和手机端都显示
-      ),
-      // TODO: 个人中心页面占位 - 待开发
-      // const NavigationItem(
-      //   icon: Icon(Icons.person),
-      //   label: PageLabel.userCenter,
-      //   view: UserCenterPage(
-      //     key: GlobalObjectKey(
-      //       PageLabel.userCenter,
-      //     ),
-      //   ),
-      //   modes: [NavigationItemMode.desktop],
-      // ),
     ];
   }
 

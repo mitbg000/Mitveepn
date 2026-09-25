@@ -10,7 +10,7 @@
 ///
 /// 使用示例：
 /// ```dart
-/// import 'package:fl_clash/xboard/infrastructure/infrastructure.dart';
+/// import 'package:mitveepn/xboard/infrastructure/infrastructure.dart';
 ///
 /// // 创建存储
 /// final storage = await SharedPrefsStorage.create();

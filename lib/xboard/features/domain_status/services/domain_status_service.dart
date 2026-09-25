@@ -1,6 +1,6 @@
-import 'package:fl_clash/xboard/core/core.dart';
-import 'package:fl_clash/xboard/config/xboard_config.dart';
-import 'package:fl_clash/xboard/sdk/xboard_sdk.dart';
+import 'package:mitveepn/xboard/core/core.dart';
+import 'package:mitveepn/xboard/config/xboard_config.dart';
+import 'package:mitveepn/xboard/sdk/xboard_sdk.dart';
 
 
 /// 域名状态服务

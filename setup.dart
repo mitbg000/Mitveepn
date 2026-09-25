@@ -132,9 +132,9 @@ class Build {
         ),
       ];
 
-  static String get appName => "Flclash";
+  static String get appName => "Mitveepn";
 
-  static String get coreName => "FlClashCore";
+  static String get coreName => "MitveepnCore";
 
   static String get libName => "libclash";
 
@@ -211,8 +211,7 @@ class Build {
     if (!await file.exists()) {
       throw "File not exists";
     }
-    final stream = file.openRead();
-    return sha256.convert(await stream.reduce((a, b) => a + b)).toString();
+    return sha256.convert(await file.readAsBytes()).toString();
   }
 
   static Future<List<String>> buildCore({
@@ -309,7 +308,7 @@ class Build {
     final targetPath = join(
       outDir,
       target.name,
-      "FlClashHelperService${target.executableExtensionName}",
+      "MitveepnHelperService${target.executableExtensionName}",
     );
     await File(outPath).copy(targetPath);
   }
@@ -512,8 +511,8 @@ class BuildCommand extends Command {
         final token = target != Target.android
             ? await Build.calcSha256(corePaths.first)
             : null;
-        Build.buildHelper(target, token!);
-        _buildDistributor(
+        await Build.buildHelper(target, token!);
+        await _buildDistributor(
           target: target,
           targets: "exe,zip",
           args:

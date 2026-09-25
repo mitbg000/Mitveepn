@@ -1,9 +1,9 @@
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/models/models.dart';
-import 'package:fl_clash/state.dart';
-import 'package:fl_clash/widgets/fade_box.dart';
-import 'package:fl_clash/widgets/pop_scope.dart';
+import 'package:mitveepn/common/common.dart';
+import 'package:mitveepn/enum/enum.dart';
+import 'package:mitveepn/models/models.dart';
+import 'package:mitveepn/state.dart';
+import 'package:mitveepn/widgets/fade_box.dart';
+import 'package:mitveepn/widgets/pop_scope.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -264,7 +264,7 @@ class CommonScaffoldState extends State<CommonScaffold> {
     if (_appBarState.value.leading != null && !_isSearch && !_isEdit) {
       return const SizedBox.shrink();
     }
-    
+
     return _isSearch
         ? TextField(
             autofocus: true,
@@ -371,6 +371,7 @@ class CommonScaffoldState extends State<CommonScaffold> {
                     return _buildAppBarWrap(
                       AppBar(
                         centerTitle: widget.centerTitle ?? false,
+                        titleSpacing: _sideNavigationBar != null ? 26 : null,
                         automaticallyImplyLeading:
                             widget.automaticallyImplyLeading,
                         leading: _buildLeading(),
@@ -382,6 +383,17 @@ class CommonScaffoldState extends State<CommonScaffold> {
                               ? state.actions
                               : widget.actions ?? [],
                         ),
+                        backgroundColor: widget.backgroundColor,
+                        foregroundColor: widget.backgroundColor != null
+                            ? const Color(0xFFE7EDF2)
+                            : null,
+                        titleTextStyle: widget.backgroundColor != null
+                            ? const TextStyle(
+                                color: Color(0xFFE7EDF2),
+                                fontSize: 30,
+                                fontWeight: FontWeight.w500,
+                              )
+                            : null,
                       ),
                     );
                   },
@@ -450,7 +462,7 @@ class CommonScaffoldState extends State<CommonScaffold> {
       appBar: _buildAppBar(),
       body: body,
       resizeToAvoidBottomInset: true,
-      backgroundColor: widget.backgroundColor,
+      backgroundColor: widget.backgroundColor ?? context.colorScheme.surface,
       floatingActionButton: widget.floatingActionButton ??
           ValueListenableBuilder<Widget?>(
             valueListenable: _floatingActionButton,

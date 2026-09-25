@@ -1,9 +1,9 @@
-import 'package:fl_clash/xboard/sdk/xboard_sdk.dart';
+import 'package:mitveepn/xboard/sdk/xboard_sdk.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/xboard/features/auth/auth.dart';
-import 'package:fl_clash/xboard/features/payment/payment.dart';
-import 'package:fl_clash/xboard/features/auth/providers/xboard_user_provider.dart';
+import 'package:mitveepn/common/common.dart';
+import 'package:mitveepn/xboard/features/auth/auth.dart';
+import 'package:mitveepn/xboard/features/payment/payment.dart';
+import 'package:mitveepn/xboard/features/auth/providers/xboard_user_provider.dart';
 final pendingOrdersProvider = StateProvider<List<OrderData>>((ref) => []);
 final paymentMethodsProvider = StateProvider<List<PaymentMethodData>>((ref) => []);
 final paymentProcessStateProvider = StateProvider<PaymentProcessState>((ref) => const PaymentProcessState());

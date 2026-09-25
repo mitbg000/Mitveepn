@@ -1,4 +1,4 @@
-import 'package:fl_clash/xboard/core/core.dart';
+import 'package:mitveepn/xboard/core/core.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/update_check_state.dart';
 import '../services/update_service.dart';

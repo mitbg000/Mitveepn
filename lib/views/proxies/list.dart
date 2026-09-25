@@ -1,13 +1,13 @@
 import 'dart:math';
 
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/models/models.dart';
-import 'package:fl_clash/providers/app.dart';
-import 'package:fl_clash/providers/config.dart';
-import 'package:fl_clash/providers/state.dart';
-import 'package:fl_clash/state.dart';
-import 'package:fl_clash/widgets/widgets.dart';
+import 'package:mitveepn/common/common.dart';
+import 'package:mitveepn/enum/enum.dart';
+import 'package:mitveepn/models/models.dart';
+import 'package:mitveepn/providers/app.dart';
+import 'package:mitveepn/providers/config.dart';
+import 'package:mitveepn/providers/state.dart';
+import 'package:mitveepn/state.dart';
+import 'package:mitveepn/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -371,11 +371,14 @@ class _ListHeaderState extends State<ListHeader> {
   _delayTest() async {
     if (isLock) return;
     isLock = true;
-    await delayTest(
-      widget.group.all,
-      widget.group.testUrl,
-    );
-    isLock = false;
+    try {
+      await delayTest(
+        widget.group.all,
+        widget.group.testUrl,
+      );
+    } finally {
+      isLock = false;
+    }
   }
 
   _handleChange(String groupName) {
@@ -514,9 +517,9 @@ class _ListHeaderState extends State<ListHeader> {
                                         if (proxyName.isNotEmpty) ...[
                                           Flexible(
                                             flex: 1,
-                                            child: EmojiText(
-                                              overflow: TextOverflow.ellipsis,
+                                            child: CountryFlagText(
                                               " · $proxyName",
+                                              overflow: TextOverflow.ellipsis,
                                               style: context.textTheme
                                                   .labelMedium?.toLight,
                                             ),
@@ -554,8 +557,16 @@ class _ListHeaderState extends State<ListHeader> {
                   IconButton(
                     onPressed: _delayTest,
                     visualDensity: VisualDensity.standard,
-                    icon: const Icon(
-                      Icons.network_ping,
+                    icon: ShaderMask(
+                      shaderCallback: (bounds) => const LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [Color(0xFFFFD600), Color(0xFFFF6D00)],
+                      ).createShader(bounds),
+                      child: const Icon(
+                        Icons.bolt,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                   const SizedBox(

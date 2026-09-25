@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'package:fl_clash/xboard/core/core.dart';
+import 'package:mitveepn/xboard/core/core.dart';
 
 import '../utils/node_id_manager.dart';
 import 'package:web_socket_channel/io.dart';

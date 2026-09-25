@@ -1,14 +1,14 @@
-import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/models/models.dart';
-import 'package:fl_clash/providers/providers.dart';
-import 'package:fl_clash/state.dart';
+import 'package:mitveepn/enum/enum.dart';
+import 'package:mitveepn/models/models.dart';
+import 'package:mitveepn/providers/providers.dart';
+import 'package:mitveepn/state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:fl_clash/xboard/services/services.dart';
-import 'package:fl_clash/xboard/core/core.dart';
+import 'package:mitveepn/xboard/services/services.dart';
+import 'package:mitveepn/xboard/core/core.dart';
 import 'tun_introduction_dialog.dart';
-import 'package:fl_clash/l10n/l10n.dart';
+import 'package:mitveepn/l10n/l10n.dart';
 class XBoardOutboundMode extends StatelessWidget {
   const XBoardOutboundMode({super.key});
   void _handleModeChange(WidgetRef ref, Mode modeOption) {

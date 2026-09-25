@@ -2,9 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:fl_clash/xboard/core/core.dart';
-import 'package:fl_clash/xboard/features/online_support/models/message_model.dart';
-import 'package:fl_clash/xboard/features/online_support/services/service_config.dart';
+import 'package:mitveepn/xboard/core/core.dart';
+import 'package:mitveepn/xboard/features/online_support/models/message_model.dart';
+import 'package:mitveepn/xboard/features/online_support/services/service_config.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 

@@ -6,12 +6,16 @@ import 'config_entry.dart';
 class OnlineSupportInfo extends ConfigEntry {
   final String apiBaseUrl;
   final String wsBaseUrl;
+  final String? crispWebsiteId;
+  final bool enabled;
 
   const OnlineSupportInfo({
     required String url,
     required String description,
     required this.apiBaseUrl,
     required this.wsBaseUrl,
+    this.crispWebsiteId,
+    this.enabled = true,
     Map<String, dynamic>? metadata,
   }) : super(url: url, description: description, metadata: metadata);
 
@@ -22,6 +26,8 @@ class OnlineSupportInfo extends ConfigEntry {
       description: json['description'] as String? ?? '',
       apiBaseUrl: json['apiBaseUrl'] as String? ?? '',
       wsBaseUrl: json['wsBaseUrl'] as String? ?? '',
+      crispWebsiteId: json['crispWebsiteId'] as String?,
+      enabled: json['enabled'] as bool? ?? true,
       metadata: json['metadata'] as Map<String, dynamic>?,
     );
   }
@@ -32,6 +38,8 @@ class OnlineSupportInfo extends ConfigEntry {
     json.addAll({
       'apiBaseUrl': apiBaseUrl,
       'wsBaseUrl': wsBaseUrl,
+      'crispWebsiteId': crispWebsiteId,
+      'enabled': enabled,
     });
     return json;
   }

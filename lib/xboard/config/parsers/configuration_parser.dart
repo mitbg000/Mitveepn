@@ -378,19 +378,33 @@ class ConfigurationParser {
 
   /// 从远程配置结果中提取配置数据
   Map<String, dynamic>? extractConfigFromRemoteResult(Map<String, dynamic> remoteResult) {
+    // 创建结果副本，以便修改
+    final result = Map<String, dynamic>.from(remoteResult);
+
+    // 转换 subscription 格式：如果是 array，转换为 object with urls
+    if (result.containsKey('subscription')) {
+      final subscription = result['subscription'];
+      if (subscription is List) {
+        // Array 格式转换为 { urls: [...] } 格式
+        result['subscription'] = {
+          'urls': subscription,
+        };
+      }
+    }
+
     // 直接检查是否包含新格式的配置结构
-    if (remoteResult.containsKey('panels') || 
-        remoteResult.containsKey('proxy') || 
-        remoteResult.containsKey('ws') || 
-        remoteResult.containsKey('update') ||
-        remoteResult.containsKey('onlineSupport') ||
-        remoteResult.containsKey('subscription')) {
-      return remoteResult;
+    if (result.containsKey('panels') ||
+        result.containsKey('proxy') ||
+        result.containsKey('ws') ||
+        result.containsKey('update') ||
+        result.containsKey('onlineSupport') ||
+        result.containsKey('subscription')) {
+      return result;
     }
 
     // 兼容旧格式：检查是否有panel_urls字段，转换为新格式
-    if (remoteResult.containsKey('panel_urls')) {
-      final panelUrls = remoteResult['panel_urls'] as List?;
+    if (result.containsKey('panel_urls')) {
+      final panelUrls = result['panel_urls'] as List?;
       if (panelUrls != null) {
         // 将旧格式转换为新格式
         final convertedConfig = <String, dynamic>{
@@ -401,14 +415,14 @@ class ConfigurationParser {
             }).toList(),
           },
         };
-        
+
         // 复制其他可能存在的字段
         for (final key in ['proxy', 'ws', 'update', 'onlineSupport', 'subscription']) {
-          if (remoteResult.containsKey(key)) {
-            convertedConfig[key] = remoteResult[key];
+          if (result.containsKey(key)) {
+            convertedConfig[key] = result[key];
           }
         }
-        
+
         return convertedConfig;
       }
     }

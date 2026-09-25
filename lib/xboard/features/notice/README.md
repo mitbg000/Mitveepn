@@ -28,7 +28,7 @@ notice/
 ### 1. 导入模块
 
 ```dart
-import 'package:fl_clash/xboard/features/notice/notice.dart';
+import 'package:mitveepn/xboard/features/notice/notice.dart';
 ```
 
 ### 2. 在 UI 中使用

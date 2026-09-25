@@ -20,82 +20,88 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'en';
 
-  static String m0(rate) => "Current commission rate: ${rate}%";
+  static String m0(url) => "Cannot open link: ${url}";
 
-  static String m1(label) =>
-      "Are you sure you want to delete the selected ${label}?";
+  static String m1(rate) => "Current commission rate: ${rate}%";
 
   static String m2(label) =>
+      "Are you sure you want to delete the selected ${label}?";
+
+  static String m3(label) =>
       "Are you sure you want to delete the current ${label}?";
 
-  static String m3(label) => "${label} cannot be empty";
+  static String m4(label) => "${label} cannot be empty";
 
-  static String m4(label) => "Current ${label} already exists";
+  static String m5(label) => "Current ${label} already exists";
 
-  static String m5(error) => "Logout failed: ${error}";
+  static String m6(error) => "Logout failed: ${error}";
 
-  static String m6(amount) => "Max transferable: ¥${amount}";
+  static String m7(amount) => "Max transferable: ¥${amount}";
 
-  static String m7(label) => "No ${label} at the moment";
+  static String m8(label) => "No ${label} at the moment";
 
-  static String m8(label) => "${label} must be a number";
+  static String m9(label) => "${label} must be a number";
 
-  static String m9(statusCode) => "Failed to get messages: ${statusCode}";
+  static String m10(statusCode) => "Failed to get messages: ${statusCode}";
 
-  static String m10(error) => "Failed to select images: ${error}";
+  static String m11(error) => "Failed to select images: ${error}";
 
-  static String m11(method) => "Unsupported HTTP method: ${method}";
+  static String m12(method) => "Unsupported HTTP method: ${method}";
 
-  static String m12(error) => "Upload failed: ${error}";
+  static String m13(error) => "Upload failed: ${error}";
 
-  static String m13(amount) => "Order amount: ${amount}";
+  static String m14(amount) => "Order amount: ${amount}";
 
-  static String m14(orderNo) => "Order: ${orderNo}";
+  static String m15(orderNo) => "Order: ${orderNo}";
 
-  static String m15(page) => "Page ${page}";
+  static String m16(page) => "Page ${page}";
 
-  static String m16(label) => "${label} must be between 1024 and 49151";
+  static String m17(label) => "${label} must be between 1024 and 49151";
 
-  static String m17(e) => "Registration failed: ${e}";
+  static String m18(e) => "Registration failed: ${e}";
 
-  static String m18(count) => "${count} items have been selected";
+  static String m19(count) => "${count} items have been selected";
 
-  static String m19(e) => "Failed to send verification code: ${e}";
+  static String m20(e) => "Failed to send verification code: ${e}";
 
-  static String m20(date) =>
+  static String m21(date) =>
       "Plan expired on ${date}, please renew to continue using";
 
-  static String m21(days) =>
+  static String m22(days) =>
       "Plan will expire in ${days} days, please renew in time";
 
-  static String m22(days) => "Subscription will expire in ${days} days";
+  static String m23(days) => "Subscription will expire in ${days} days";
 
-  static String m23(count) => "Total ${count} records";
+  static String m24(count) => "Total ${count} records";
 
-  static String m24(amount) => "Transfer amount cannot exceed ¥${amount}";
+  static String m25(amount) => "Transfer amount cannot exceed ¥${amount}";
 
-  static String m25(error) => "Transfer failed: ${error}";
+  static String m26(error) => "Transfer failed: ${error}";
 
-  static String m26(amount) =>
+  static String m27(amount) =>
       "Transfer success! Transferred ¥${amount} to wallet";
 
-  static String m27(version) => "Current version: ${version}";
+  static String m28(version) => "Current version: ${version}";
 
-  static String m28(version) => "Force update: ${version}";
+  static String m29(version) => "Force update: ${version}";
 
-  static String m29(version) => "New version found: ${version}";
+  static String m30(version) => "New version found: ${version}";
 
-  static String m30(statusCode) =>
+  static String m31(statusCode) =>
       "Server returned error status code ${statusCode}";
 
-  static String m31(label) => "${label} must be a url";
+  static String m32(label) => "${label} must be a url";
 
-  static String m32(email) =>
+  static String m33(email) =>
       "Verification code has been sent to ${email}, please check and enter the verification code and new password";
 
-  static String m33(amount) => "Withdrawable amount: ${amount}";
+  static String m34(amount) => "Withdrawable amount: ${amount}";
 
-  static String m34(time) => "Running time: ${time}";
+  static String m35(error) => "Failed to load config: ${error}";
+
+  static String m36(error) => "Failed to open payment page: ${error}";
+
+  static String m37(time) => "Running time: ${time}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -119,6 +125,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "action_view": MessageLookupByLibrary.simpleMessage("Show/Hide"),
     "add": MessageLookupByLibrary.simpleMessage("Add"),
     "addRule": MessageLookupByLibrary.simpleMessage("Add rule"),
+    "addSubscription": MessageLookupByLibrary.simpleMessage("Add subscription"),
     "addedOriginRules": MessageLookupByLibrary.simpleMessage(
       "Attach on the original rules",
     ),
@@ -193,6 +200,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "availableCommission": MessageLookupByLibrary.simpleMessage(
       "Available Commission",
     ),
+    "availableDomains": MessageLookupByLibrary.simpleMessage(
+      "Available domains",
+    ),
     "backToLogin": MessageLookupByLibrary.simpleMessage("Back to Login"),
     "backup": MessageLookupByLibrary.simpleMessage("Backup"),
     "backupAndRecovery": MessageLookupByLibrary.simpleMessage(
@@ -228,6 +238,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "cannotOpenBrowser": MessageLookupByLibrary.simpleMessage(
       "Cannot open browser, please visit web manually",
     ),
+    "cannotOpenLink": m0,
     "checkError": MessageLookupByLibrary.simpleMessage("Check error"),
     "checkNetwork": MessageLookupByLibrary.simpleMessage(
       "Please check network and retry",
@@ -296,7 +307,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "credentialsSaved": MessageLookupByLibrary.simpleMessage(
       "Credentials saved",
     ),
-    "currentCommissionRate": m0,
+    "currentCommissionRate": m1,
     "cut": MessageLookupByLibrary.simpleMessage("Cut"),
     "dark": MessageLookupByLibrary.simpleMessage("Dark"),
     "dashboard": MessageLookupByLibrary.simpleMessage("Dashboard"),
@@ -312,8 +323,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "delay": MessageLookupByLibrary.simpleMessage("Delay"),
     "delaySort": MessageLookupByLibrary.simpleMessage("Sort by delay"),
     "delete": MessageLookupByLibrary.simpleMessage("Delete"),
-    "deleteMultipTip": m1,
-    "deleteTip": m2,
+    "deleteMultipTip": m2,
+    "deleteTip": m3,
     "desc": MessageLookupByLibrary.simpleMessage(
       "A multi-platform proxy client based on ClashMeta, simple and easy to use, open-source and ad-free.",
     ),
@@ -343,10 +354,14 @@ class MessageLookup extends MessageLookupByLibrary {
       "Do you want to pass",
     ),
     "domain": MessageLookupByLibrary.simpleMessage("Domain"),
+    "domainNotReadyTryAgain": MessageLookupByLibrary.simpleMessage(
+      "Domain is not ready, please try again",
+    ),
     "domainStatusAvailable": MessageLookupByLibrary.simpleMessage(
       "Service Available",
     ),
     "domainStatusChecking": MessageLookupByLibrary.simpleMessage("Checking..."),
+    "domainStatusTitle": MessageLookupByLibrary.simpleMessage("Domain Status"),
     "domainStatusUnavailable": MessageLookupByLibrary.simpleMessage(
       "Service Unavailable",
     ),
@@ -356,7 +371,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "emailVerificationCode": MessageLookupByLibrary.simpleMessage(
       "Email Verification Code",
     ),
-    "emptyTip": m3,
+    "emptyTip": m4,
     "en": MessageLookupByLibrary.simpleMessage("English"),
     "enableOverride": MessageLookupByLibrary.simpleMessage("Enable override"),
     "enterEmailForReset": MessageLookupByLibrary.simpleMessage(
@@ -369,11 +384,12 @@ class MessageLookup extends MessageLookupByLibrary {
       "Please enter transfer amount",
     ),
     "entries": MessageLookupByLibrary.simpleMessage(" entries"),
+    "errorMessage": MessageLookupByLibrary.simpleMessage("Error message"),
     "exclude": MessageLookupByLibrary.simpleMessage("Hidden from recent tasks"),
     "excludeDesc": MessageLookupByLibrary.simpleMessage(
       "When the app is in the background, the app is hidden from the recent task",
     ),
-    "existsTip": m4,
+    "existsTip": m5,
     "exit": MessageLookupByLibrary.simpleMessage("Exit"),
     "expand": MessageLookupByLibrary.simpleMessage("Standard"),
     "expirationTime": MessageLookupByLibrary.simpleMessage("Expiration time"),
@@ -508,13 +524,13 @@ class MessageLookup extends MessageLookupByLibrary {
     "ipv6InboundDesc": MessageLookupByLibrary.simpleMessage(
       "Allow IPv6 inbound",
     ),
-    "ja": MessageLookupByLibrary.simpleMessage("Japanese"),
     "just": MessageLookupByLibrary.simpleMessage("Just"),
     "keepAliveIntervalDesc": MessageLookupByLibrary.simpleMessage(
       "Tcp keep alive interval",
     ),
     "key": MessageLookupByLibrary.simpleMessage("Key"),
     "language": MessageLookupByLibrary.simpleMessage("Language"),
+    "lastChecked": MessageLookupByLibrary.simpleMessage("Last checked"),
     "layout": MessageLookupByLibrary.simpleMessage("Layout"),
     "light": MessageLookupByLibrary.simpleMessage("Light"),
     "list": MessageLookupByLibrary.simpleMessage("List"),
@@ -541,7 +557,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "logoutConfirmMsg": MessageLookupByLibrary.simpleMessage(
       "Are you sure to logout? You need to login again.",
     ),
-    "logoutFailed": m5,
+    "logoutFailed": m6,
     "logs": MessageLookupByLibrary.simpleMessage("Logs"),
     "logsDesc": MessageLookupByLibrary.simpleMessage("Log capture records"),
     "logsTest": MessageLookupByLibrary.simpleMessage("Logs test"),
@@ -550,7 +566,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Used for UWP loopback unlocking",
     ),
     "loose": MessageLookupByLibrary.simpleMessage("Loose"),
-    "maxTransferable": m6,
+    "maxTransferable": m7,
     "memoryInfo": MessageLookupByLibrary.simpleMessage("Memory info"),
     "messageTest": MessageLookupByLibrary.simpleMessage("Message test"),
     "messageTestTip": MessageLookupByLibrary.simpleMessage(
@@ -618,8 +634,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "nullProfileDesc": MessageLookupByLibrary.simpleMessage(
       "No profile, Please add a profile",
     ),
-    "nullTip": m7,
-    "numberTip": m8,
+    "nullTip": m8,
+    "numberTip": m9,
     "oneColumn": MessageLookupByLibrary.simpleMessage("One column"),
     "onlineSupport": MessageLookupByLibrary.simpleMessage("Online Support"),
     "onlineSupportAddMore": MessageLookupByLibrary.simpleMessage("Add More"),
@@ -649,7 +665,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "onlineSupportDisconnected": MessageLookupByLibrary.simpleMessage(
       "Disconnected",
     ),
-    "onlineSupportGetMessagesFailed": m9,
+    "onlineSupportGetMessagesFailed": m10,
     "onlineSupportInputHint": MessageLookupByLibrary.simpleMessage(
       "Please enter your question...",
     ),
@@ -659,7 +675,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "onlineSupportSelectImages": MessageLookupByLibrary.simpleMessage(
       "Select Images",
     ),
-    "onlineSupportSelectImagesFailed": m10,
+    "onlineSupportSelectImagesFailed": m11,
     "onlineSupportSend": MessageLookupByLibrary.simpleMessage("Send"),
     "onlineSupportSendImage": MessageLookupByLibrary.simpleMessage(
       "Send image",
@@ -676,8 +692,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "onlineSupportTokenNotFound": MessageLookupByLibrary.simpleMessage(
       "Authentication token not found",
     ),
-    "onlineSupportUnsupportedHttpMethod": m11,
-    "onlineSupportUploadFailed": m12,
+    "onlineSupportUnsupportedHttpMethod": m12,
+    "onlineSupportUploadFailed": m13,
     "onlineSupportWebSocketConfigNotFound": MessageLookupByLibrary.simpleMessage(
       "Online support WebSocket configuration not found, please check configuration",
     ),
@@ -695,8 +711,8 @@ class MessageLookup extends MessageLookupByLibrary {
       "Failed to open web, please visit manually",
     ),
     "options": MessageLookupByLibrary.simpleMessage("Options"),
-    "orderAmount": m13,
-    "orderNumber": m14,
+    "orderAmount": m14,
+    "orderNumber": m15,
     "other": MessageLookupByLibrary.simpleMessage("Other"),
     "otherContributors": MessageLookupByLibrary.simpleMessage(
       "Other contributors",
@@ -716,7 +732,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "overrideOriginRules": MessageLookupByLibrary.simpleMessage(
       "Override the original rule",
     ),
-    "pageNumber": m15,
+    "pageNumber": m16,
     "palette": MessageLookupByLibrary.simpleMessage("Palette"),
     "password": MessageLookupByLibrary.simpleMessage("Password"),
     "passwordMin8Chars": MessageLookupByLibrary.simpleMessage(
@@ -806,7 +822,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "portConflictTip": MessageLookupByLibrary.simpleMessage(
       "Please enter a different port",
     ),
-    "portTip": m16,
+    "portTip": m17,
     "preferH3Desc": MessageLookupByLibrary.simpleMessage(
       "Prioritize the use of DOH\'s http/3",
     ),
@@ -815,6 +831,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "preview": MessageLookupByLibrary.simpleMessage("Preview"),
     "profile": MessageLookupByLibrary.simpleMessage("Profile"),
+    "profileAddedSuccessfully": MessageLookupByLibrary.simpleMessage(
+      "Profile added successfully",
+    ),
     "profileAutoUpdateIntervalInvalidValidationDesc":
         MessageLookupByLibrary.simpleMessage(
           "Please input a valid interval time format",
@@ -883,7 +902,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "registerSuccessSaveCredentials": MessageLookupByLibrary.simpleMessage(
       "Registration successful - Saving credentials:",
     ),
-    "registrationFailed": m17,
+    "registrationFailed": m18,
     "rememberPassword": MessageLookupByLibrary.simpleMessage(
       "Remember your password?",
     ),
@@ -923,7 +942,6 @@ class MessageLookup extends MessageLookupByLibrary {
       "Bypass private route address",
     ),
     "routeMode_config": MessageLookupByLibrary.simpleMessage("Use config"),
-    "ru": MessageLookupByLibrary.simpleMessage("Russian"),
     "rule": MessageLookupByLibrary.simpleMessage("Rule"),
     "ruleName": MessageLookupByLibrary.simpleMessage("Rule name"),
     "ruleProviders": MessageLookupByLibrary.simpleMessage("Rule providers"),
@@ -945,14 +963,14 @@ class MessageLookup extends MessageLookupByLibrary {
     "selectAll": MessageLookupByLibrary.simpleMessage("Select all"),
     "selectTheme": MessageLookupByLibrary.simpleMessage("Select Theme"),
     "selected": MessageLookupByLibrary.simpleMessage("Selected"),
-    "selectedCountTitle": m18,
+    "selectedCountTitle": m19,
     "sendCodeFailed": MessageLookupByLibrary.simpleMessage(
       "Failed to send verification code",
     ),
     "sendVerificationCode": MessageLookupByLibrary.simpleMessage(
       "Send Verification Code",
     ),
-    "sendVerificationCodeFailed": m19,
+    "sendVerificationCodeFailed": m20,
     "setNewPassword": MessageLookupByLibrary.simpleMessage("Set New Password"),
     "settings": MessageLookupByLibrary.simpleMessage("Settings"),
     "show": MessageLookupByLibrary.simpleMessage("Show"),
@@ -982,7 +1000,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "subscriptionExpired": MessageLookupByLibrary.simpleMessage(
       "Subscription expired",
     ),
-    "subscriptionExpiredDetail": m20,
+    "subscriptionExpiredDetail": m21,
     "subscriptionExpiresToday": MessageLookupByLibrary.simpleMessage(
       "Subscription expires today",
     ),
@@ -992,7 +1010,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "subscriptionExpiringInDays": MessageLookupByLibrary.simpleMessage(
       "Subscription expiring soon",
     ),
-    "subscriptionExpiringInDaysDetail": m21,
+    "subscriptionExpiringInDaysDetail": m22,
     "subscriptionNoSubscription": MessageLookupByLibrary.simpleMessage(
       "No subscription",
     ),
@@ -1014,7 +1032,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "subscriptionValid": MessageLookupByLibrary.simpleMessage(
       "Subscription valid",
     ),
-    "subscriptionValidDetail": m22,
+    "subscriptionValidDetail": m23,
     "switchTheme": MessageLookupByLibrary.simpleMessage("Switch Theme"),
     "sync": MessageLookupByLibrary.simpleMessage("Sync"),
     "system": MessageLookupByLibrary.simpleMessage("System"),
@@ -1050,20 +1068,20 @@ class MessageLookup extends MessageLookupByLibrary {
     "tools": MessageLookupByLibrary.simpleMessage("Tools"),
     "totalCommission": MessageLookupByLibrary.simpleMessage("Total Commission"),
     "totalInvites": MessageLookupByLibrary.simpleMessage("Total Invites"),
-    "totalRecords": m23,
+    "totalRecords": m24,
     "tproxyPort": MessageLookupByLibrary.simpleMessage("Tproxy Port"),
     "trafficUsage": MessageLookupByLibrary.simpleMessage("Traffic usage"),
     "transfer": MessageLookupByLibrary.simpleMessage("Transfer"),
     "transferAmount": MessageLookupByLibrary.simpleMessage("Transfer Amount"),
-    "transferAmountExceeded": m24,
-    "transferFailed": m25,
+    "transferAmountExceeded": m25,
+    "transferFailed": m26,
     "transferNote": MessageLookupByLibrary.simpleMessage(
       "Transferred balance can be used for in-app purchases",
     ),
     "transferSuccess": MessageLookupByLibrary.simpleMessage(
       "Transfer Success!",
     ),
-    "transferSuccessMsg": m26,
+    "transferSuccessMsg": m27,
     "transferToWallet": MessageLookupByLibrary.simpleMessage(
       "Transfer to Wallet",
     ),
@@ -1087,19 +1105,19 @@ class MessageLookup extends MessageLookupByLibrary {
     "updateCheckAllServersUnavailable": MessageLookupByLibrary.simpleMessage(
       "All configured update servers are unavailable",
     ),
-    "updateCheckCurrentVersion": m27,
-    "updateCheckForceUpdate": m28,
+    "updateCheckCurrentVersion": m28,
+    "updateCheckForceUpdate": m29,
     "updateCheckMustUpdate": MessageLookupByLibrary.simpleMessage(
       "Must Update",
     ),
-    "updateCheckNewVersionFound": m29,
+    "updateCheckNewVersionFound": m30,
     "updateCheckNoServerUrlsConfigured": MessageLookupByLibrary.simpleMessage(
       "No update server URLs configured, please check configuration",
     ),
     "updateCheckReleaseNotes": MessageLookupByLibrary.simpleMessage(
       "Release Notes:",
     ),
-    "updateCheckServerError": m30,
+    "updateCheckServerError": m31,
     "updateCheckServerTemporarilyUnavailable":
         MessageLookupByLibrary.simpleMessage(
           "Server temporarily unavailable, please try again later",
@@ -1116,7 +1134,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "urlDesc": MessageLookupByLibrary.simpleMessage(
       "Obtain profile through URL",
     ),
-    "urlTip": m31,
+    "urlTip": m32,
     "useHosts": MessageLookupByLibrary.simpleMessage("Use hosts"),
     "useSystemHosts": MessageLookupByLibrary.simpleMessage("Use system hosts"),
     "userCenter": MessageLookupByLibrary.simpleMessage("User Center"),
@@ -1133,7 +1151,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "verificationCodeSentCheckEmail": MessageLookupByLibrary.simpleMessage(
       "Verification code sent, please check your email",
     ),
-    "verificationCodeSentTo": m32,
+    "verificationCodeSentTo": m33,
+    "vi": MessageLookupByLibrary.simpleMessage("Vietnamese"),
     "vibrantScheme": MessageLookupByLibrary.simpleMessage("Vibrant"),
     "view": MessageLookupByLibrary.simpleMessage("View"),
     "viewHistory": MessageLookupByLibrary.simpleMessage("View History"),
@@ -1162,7 +1181,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "withdrawCommission": MessageLookupByLibrary.simpleMessage(
       "Withdraw Commission",
     ),
-    "withdrawableAmount": m33,
+    "withdrawableAmount": m34,
     "withdrawalAvailable": MessageLookupByLibrary.simpleMessage(
       "Available commission can be withdrawn",
     ),
@@ -1181,9 +1200,11 @@ class MessageLookup extends MessageLookupByLibrary {
     "xboardAfterPurchasingPlan": MessageLookupByLibrary.simpleMessage(
       "After purchasing a plan, you will enjoy:",
     ),
+    "xboardAmountToPay": MessageLookupByLibrary.simpleMessage("Amount to pay"),
     "xboardApiUrlNotConfigured": MessageLookupByLibrary.simpleMessage(
       "API URL not configured",
     ),
+    "xboardApply": MessageLookupByLibrary.simpleMessage("Apply"),
     "xboardAutoCheckEvery5Seconds": MessageLookupByLibrary.simpleMessage(
       "System checks every 5 seconds, will redirect automatically after payment",
     ),
@@ -1195,6 +1216,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "xboardAutoTesting": MessageLookupByLibrary.simpleMessage("Auto testing"),
     "xboardBack": MessageLookupByLibrary.simpleMessage("Back"),
+    "xboardBandwidthUsageHistory": MessageLookupByLibrary.simpleMessage(
+      "30-day bandwidth usage history",
+    ),
     "xboardBrowserNotOpenedTip": MessageLookupByLibrary.simpleMessage(
       "If browser doesn\'t open automatically, click \\\"Reopen\\\" or copy link manually",
     ),
@@ -1202,11 +1226,19 @@ class MessageLookup extends MessageLookupByLibrary {
       "Please buy more traffic or upgrade plan",
     ),
     "xboardBuyNow": MessageLookupByLibrary.simpleMessage("Buy Now"),
+    "xboardBuyPlan": MessageLookupByLibrary.simpleMessage("Buy plan"),
     "xboardBuyoutPlan": MessageLookupByLibrary.simpleMessage("Buyout plan"),
     "xboardCancel": MessageLookupByLibrary.simpleMessage("Cancel"),
     "xboardCancelPayment": MessageLookupByLibrary.simpleMessage(
       "Cancel payment",
     ),
+    "xboardCannotLaunchBrowser": MessageLookupByLibrary.simpleMessage(
+      "Cannot launch external browser",
+    ),
+    "xboardCannotOpenPaymentLink": MessageLookupByLibrary.simpleMessage(
+      "Cannot open payment link",
+    ),
+    "xboardChange": MessageLookupByLibrary.simpleMessage("Change"),
     "xboardCheckPaymentFailed": MessageLookupByLibrary.simpleMessage(
       "Failed to check payment status",
     ),
@@ -1247,9 +1279,11 @@ class MessageLookup extends MessageLookupByLibrary {
         MessageLookupByLibrary.simpleMessage(
           "Congratulations! Your subscription has been successfully purchased and activated",
         ),
+    "xboardConnect": MessageLookupByLibrary.simpleMessage("Connect"),
     "xboardConnectGlobalQualityNodes": MessageLookupByLibrary.simpleMessage(
       "Connect to global quality nodes",
     ),
+    "xboardConnected": MessageLookupByLibrary.simpleMessage("Connected"),
     "xboardConnectionTimeout": MessageLookupByLibrary.simpleMessage(
       "Connection timeout, please check network connection",
     ),
@@ -1259,6 +1293,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "xboardCopySubscriptionLinkAbove": MessageLookupByLibrary.simpleMessage(
       "Copy the subscription link above",
     ),
+    "xboardCoreStatus": MessageLookupByLibrary.simpleMessage("Core Status"),
     "xboardCouponExpired": MessageLookupByLibrary.simpleMessage(
       "Coupon expired",
     ),
@@ -1268,6 +1303,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "xboardCouponOptional": MessageLookupByLibrary.simpleMessage(
       "Coupon (optional)",
     ),
+    "xboardCreateOrder": MessageLookupByLibrary.simpleMessage("Create Order"),
     "xboardCreatingOrder": MessageLookupByLibrary.simpleMessage(
       "Creating order",
     ),
@@ -1278,16 +1314,25 @@ class MessageLookup extends MessageLookupByLibrary {
     "xboardCurrentVersion": MessageLookupByLibrary.simpleMessage(
       "Current version",
     ),
+    "xboardCustomerSupportNotEnabled": MessageLookupByLibrary.simpleMessage(
+      "Customer support not enabled",
+    ),
+    "xboardDataUsage": MessageLookupByLibrary.simpleMessage("Data Usage"),
     "xboardDays": MessageLookupByLibrary.simpleMessage("days"),
     "xboardDeductibleDuringPayment": MessageLookupByLibrary.simpleMessage(
       "Deductible during payment",
     ),
+    "xboardDevices": MessageLookupByLibrary.simpleMessage("devices"),
+    "xboardDisabled": MessageLookupByLibrary.simpleMessage("Disabled"),
+    "xboardDisconnect": MessageLookupByLibrary.simpleMessage("Disconnect"),
+    "xboardDiscount": MessageLookupByLibrary.simpleMessage("Discount"),
     "xboardDiscounted": MessageLookupByLibrary.simpleMessage("Discounted"),
     "xboardDownloadingConfig": MessageLookupByLibrary.simpleMessage(
       "Downloading configuration file",
     ),
     "xboardEmail": MessageLookupByLibrary.simpleMessage("Email"),
     "xboardEnableTun": MessageLookupByLibrary.simpleMessage("Enable TUN"),
+    "xboardEnabled": MessageLookupByLibrary.simpleMessage("Enabled"),
     "xboardEnjoyFastNetworkExperience": MessageLookupByLibrary.simpleMessage(
       "Enjoy fast network experience",
     ),
@@ -1324,6 +1369,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "xboardHighSpeedNetwork": MessageLookupByLibrary.simpleMessage(
       "High-speed network",
     ),
+    "xboardHome": MessageLookupByLibrary.simpleMessage("Home"),
     "xboardImportFailed": MessageLookupByLibrary.simpleMessage("Import failed"),
     "xboardImportSuccess": MessageLookupByLibrary.simpleMessage(
       "Import successful",
@@ -1345,6 +1391,8 @@ class MessageLookup extends MessageLookupByLibrary {
       "Please keep your subscription link safe and don\'t share with others",
     ),
     "xboardLater": MessageLookupByLibrary.simpleMessage("Later"),
+    "xboardLoadConfigFailed": m35,
+    "xboardLoadFailed": MessageLookupByLibrary.simpleMessage("Load failed"),
     "xboardLoadingFailed": MessageLookupByLibrary.simpleMessage(
       "Loading failed",
     ),
@@ -1375,6 +1423,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "xboardLogoutSuccess": MessageLookupByLibrary.simpleMessage(
       "Successfully logged out",
     ),
+    "xboardMbps": MessageLookupByLibrary.simpleMessage("Mbps"),
     "xboardMissingRequiredField": MessageLookupByLibrary.simpleMessage(
       "Missing required field",
     ),
@@ -1390,6 +1439,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "New version found",
     ),
     "xboardNext": MessageLookupByLibrary.simpleMessage("Next"),
+    "xboardNo": MessageLookupByLibrary.simpleMessage("No"),
     "xboardNoAvailableNodes": MessageLookupByLibrary.simpleMessage(
       "No available nodes",
     ),
@@ -1402,6 +1452,12 @@ class MessageLookup extends MessageLookupByLibrary {
     "xboardNoInternetConnection": MessageLookupByLibrary.simpleMessage(
       "No internet connection, please check network settings",
     ),
+    "xboardNoPaymentMethods": MessageLookupByLibrary.simpleMessage(
+      "No payment methods available",
+    ),
+    "xboardNoPlansAvailable": MessageLookupByLibrary.simpleMessage(
+      "No plans available",
+    ),
     "xboardNoSubscriptionInfo": MessageLookupByLibrary.simpleMessage(
       "No subscription information",
     ),
@@ -1411,6 +1467,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "xboardNodeName": MessageLookupByLibrary.simpleMessage("Node Name"),
     "xboardNone": MessageLookupByLibrary.simpleMessage("None"),
     "xboardNotLoggedIn": MessageLookupByLibrary.simpleMessage("Not Logged In"),
+    "xboardNotifications": MessageLookupByLibrary.simpleMessage(
+      "Notifications",
+    ),
     "xboardOneTimePayment": MessageLookupByLibrary.simpleMessage("One-time"),
     "xboardOpenPaymentFailed": MessageLookupByLibrary.simpleMessage(
       "Failed to open payment page",
@@ -1418,6 +1477,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "xboardOpenPaymentLinkFailed": MessageLookupByLibrary.simpleMessage(
       "Failed to open payment link",
     ),
+    "xboardOpenPaymentPageFailed": m36,
     "xboardOperationFailed": MessageLookupByLibrary.simpleMessage(
       "Operation failed",
     ),
@@ -1434,6 +1494,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "xboardOrderStatusPending": MessageLookupByLibrary.simpleMessage(
       "Order status: Pending payment",
     ),
+    "xboardOriginalPrice": MessageLookupByLibrary.simpleMessage(
+      "Original price",
+    ),
     "xboardPassword": MessageLookupByLibrary.simpleMessage("Password"),
     "xboardPaymentCancelled": MessageLookupByLibrary.simpleMessage(
       "Payment cancelled",
@@ -1445,7 +1508,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Payment completed!",
     ),
     "xboardPaymentFailed": MessageLookupByLibrary.simpleMessage(
-      "Payment failed",
+      "Payment failed: No payment link received",
     ),
     "xboardPaymentGateway": MessageLookupByLibrary.simpleMessage(
       "Payment gateway",
@@ -1489,6 +1552,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "xboardPaymentSuccessful": MessageLookupByLibrary.simpleMessage(
       "🎉 Payment successful!",
     ),
+    "xboardPerMonth": MessageLookupByLibrary.simpleMessage("/ month"),
     "xboardPlanInfo": MessageLookupByLibrary.simpleMessage("Plan Information"),
     "xboardPlanNotFound": MessageLookupByLibrary.simpleMessage(
       "Plan not found",
@@ -1539,6 +1603,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "xboardRefreshStatus": MessageLookupByLibrary.simpleMessage(
       "Refresh status",
     ),
+    "xboardRefreshSubscriptionInfo": MessageLookupByLibrary.simpleMessage(
+      "Refresh subscription info",
+    ),
     "xboardRegister": MessageLookupByLibrary.simpleMessage("Register"),
     "xboardRegisterFailed": MessageLookupByLibrary.simpleMessage(
       "Registration failed",
@@ -1568,16 +1635,18 @@ class MessageLookup extends MessageLookupByLibrary {
     "xboardReturnAfterPaymentAutoDetect": MessageLookupByLibrary.simpleMessage(
       "3. Return to app after payment, system will detect automatically",
     ),
-    "xboardRunningTime": m34,
+    "xboardRunningTime": m37,
     "xboardSecureEncryption": MessageLookupByLibrary.simpleMessage(
       "Secure encryption",
+    ),
+    "xboardSelectAPlan": MessageLookupByLibrary.simpleMessage("Select a Plan"),
+    "xboardSelectPaymentMethod": MessageLookupByLibrary.simpleMessage(
+      "Select Payment Method",
     ),
     "xboardSelectPaymentPeriod": MessageLookupByLibrary.simpleMessage(
       "Select payment period",
     ),
-    "xboardSelectPeriod": MessageLookupByLibrary.simpleMessage(
-      "Please select purchase period",
-    ),
+    "xboardSelectPeriod": MessageLookupByLibrary.simpleMessage("Select Period"),
     "xboardSendVerificationCode": MessageLookupByLibrary.simpleMessage(
       "Send Verification Code",
     ),
@@ -1637,6 +1706,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "xboardTrafficExhausted": MessageLookupByLibrary.simpleMessage(
       "Traffic exhausted",
     ),
+    "xboardTrafficTrend": MessageLookupByLibrary.simpleMessage("Traffic Trend"),
     "xboardTrafficUsedUp": MessageLookupByLibrary.simpleMessage(
       "Traffic used up",
     ),
@@ -1655,6 +1725,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Unknown error, please retry",
     ),
     "xboardUnknownUser": MessageLookupByLibrary.simpleMessage("Unknown User"),
+    "xboardUnlimited": MessageLookupByLibrary.simpleMessage("Unlimited"),
     "xboardUnselected": MessageLookupByLibrary.simpleMessage("Unselected"),
     "xboardUnsupportedCouponType": MessageLookupByLibrary.simpleMessage(
       "Unsupported coupon type",
@@ -1688,6 +1759,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "Waiting for payment completion",
     ),
     "xboardYearlyPayment": MessageLookupByLibrary.simpleMessage("Yearly"),
+    "xboardYes": MessageLookupByLibrary.simpleMessage("Yes"),
     "years": MessageLookupByLibrary.simpleMessage("Years"),
     "zh_CN": MessageLookupByLibrary.simpleMessage("Simplified Chinese"),
   };

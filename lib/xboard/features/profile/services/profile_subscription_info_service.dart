@@ -1,5 +1,5 @@
-import 'package:fl_clash/models/models.dart';
-import 'package:fl_clash/xboard/sdk/xboard_sdk.dart' as xboard;
+import 'package:mitveepn/models/models.dart';
+import 'package:mitveepn/xboard/sdk/xboard_sdk.dart' as xboard;
 
 /// Profile 订阅信息服务
 ///

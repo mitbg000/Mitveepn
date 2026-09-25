@@ -13,7 +13,7 @@
 /// ```
 library;
 
-import 'package:fl_clash/xboard/core/core.dart';
+import 'package:mitveepn/xboard/core/core.dart';
 
 /// 存储接口
 abstract interface class StorageInterface {

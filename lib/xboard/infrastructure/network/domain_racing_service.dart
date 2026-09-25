@@ -6,8 +6,8 @@ library;
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/services.dart';
-import 'package:fl_clash/xboard/core/core.dart';
-import 'package:fl_clash/xboard/infrastructure/http/user_agent_config.dart';
+import 'package:mitveepn/xboard/core/core.dart';
+import 'package:mitveepn/xboard/infrastructure/http/user_agent_config.dart';
 
 /// 域名竞速服务
 class DomainRacingService {
@@ -24,6 +24,16 @@ class DomainRacingService {
   // 缓存加载的证书
   static SecurityContext? _securityContext;
   static String? _configuredCertPath;
+
+  /// Cache kết quả竞速 theo danh sách domain, tránh đua lại nhiều lần khi
+  /// khởi động (SDK init và quick auth trước đây đua độc lập 2 lần).
+  static const Duration _cacheTtl = Duration(minutes: 5);
+  static final Map<String, _RaceCacheEntry> _raceCache = {};
+
+  /// Xoá cache竞速 (dùng khi đổi mạng hoặc cần chọn lại domain).
+  static void clearCache() {
+    _raceCache.clear();
+  }
 
   /// 获取配置了CA证书的SecurityContext
   static Future<SecurityContext> _getSecurityContext() async {
@@ -72,6 +82,16 @@ class DomainRacingService {
   }) async {
     if (domains.isEmpty) return null;
     if (domains.length == 1) return domains.first;
+
+    final cacheKey = '$testPath|$forceHttpsResult|${domains.join(',')}';
+    final cached = _raceCache[cacheKey];
+    if (cached != null) {
+      if (DateTime.now().difference(cached.time) < _cacheTtl) {
+        XBoardLogger.info('[域名竞速] dùng kết quả cache: ${cached.winner}');
+        return cached.winner;
+      }
+      _raceCache.remove(cacheKey);
+    }
 
     XBoardLogger.info('[域名竞速] 开始竞速测试 ${domains.length} 个域名');
 
@@ -133,11 +153,14 @@ class DomainRacingService {
       final winner = await completer.future;
 
       // 如果需要强制HTTPS结果，转换获胜域名
-      if (winner != null && forceHttpsResult) {
-        return _convertToHttpsUrl(winner);
+      final result =
+          winner != null && forceHttpsResult ? _convertToHttpsUrl(winner) : winner;
+
+      if (result != null) {
+        _raceCache[cacheKey] = _RaceCacheEntry(result, DateTime.now());
       }
 
-      return winner;
+      return result;
     } catch (e) {
       XBoardLogger.error('[域名竞速] 竞速测试异常', e);
       return null;
@@ -152,6 +175,7 @@ class DomainRacingService {
     int index,
   ) async {
     final stopwatch = Stopwatch()..start();
+    HttpClient? client;
 
     try {
       XBoardLogger.info('[域名竞速] 开始测试域名 #$index: $domain');
@@ -162,7 +186,6 @@ class DomainRacingService {
 
       // 根据域名类型选择HttpClient配置
       final withoutProtocol = domain.replaceFirst(RegExp(r'^https?://'), '');
-      HttpClient client;
 
       if (_isIpWithPort(withoutProtocol)) {
         // IP+端口：使用自定义证书 + 忽略主机名验证
@@ -185,6 +208,16 @@ class DomainRacingService {
 
       client.connectionTimeout = _connectionTimeout;
 
+      // Khi có domain khác thắng, đóng client ngay để socket không chạy tiếp
+      // tới hết timeout.
+      final clientRef = client;
+      cancelToken.onCancel = () => clientRef.close(force: true);
+      if (cancelToken.isCancelled) {
+        stopwatch.stop();
+        return DomainTestResult.failure(
+            domain, '测试被取消', stopwatch.elapsedMilliseconds);
+      }
+
       final uri = Uri.parse(testUrl);
       final request = await client.getUrl(uri);
 
@@ -203,7 +236,6 @@ class DomainRacingService {
       request.headers.set(HttpHeaders.acceptHeader, '*/*');
 
       final response = await request.close().timeout(_responseTimeout);
-      client.close();
 
       stopwatch.stop();
 
@@ -238,6 +270,9 @@ class DomainRacingService {
       XBoardLogger.info('[域名竞速] 域名 #$index ($domain) 测试失败: $e');
       return DomainTestResult.failure(
           domain, '连接失败: $e', stopwatch.elapsedMilliseconds);
+    } finally {
+      // Đóng ở finally: nhánh timeout/exception trước đây rò HttpClient.
+      client?.close(force: true);
     }
   }
 
@@ -376,14 +411,37 @@ class DomainTestResult {
   }
 }
 
+/// Một dòng cache kết quả竞速
+class _RaceCacheEntry {
+  final String winner;
+  final DateTime time;
+
+  const _RaceCacheEntry(this.winner, this.time);
+}
+
 /// 取消令牌
 class CancelToken {
   bool _isCancelled = false;
+  void Function()? _onCancel;
 
   bool get isCancelled => _isCancelled;
 
+  /// Đăng ký hành động abort (đóng socket) để cancel() dừng request ngay,
+  /// thay vì chỉ đánh dấu cờ rồi chờ request chạy hết timeout.
+  set onCancel(void Function() callback) {
+    if (_isCancelled) {
+      callback();
+      return;
+    }
+    _onCancel = callback;
+  }
+
   void cancel() {
+    if (_isCancelled) return;
     _isCancelled = true;
+    final callback = _onCancel;
+    _onCancel = null;
+    callback?.call();
   }
 }
 

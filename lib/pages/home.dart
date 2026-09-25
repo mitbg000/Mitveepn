@@ -1,13 +1,14 @@
 import 'dart:io';
 
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/models/models.dart';
-import 'package:fl_clash/providers/providers.dart';
-import 'package:fl_clash/state.dart';
-import 'package:fl_clash/widgets/widgets.dart';
-import 'package:fl_clash/xboard/features/online_support/providers/chat_provider.dart';
-import 'package:fl_clash/xboard/features/shared/shared.dart';
+import 'package:mitveepn/common/common.dart';
+import 'package:mitveepn/enum/enum.dart';
+import 'package:mitveepn/models/models.dart';
+import 'package:mitveepn/providers/providers.dart';
+import 'package:mitveepn/state.dart';
+import 'package:mitveepn/widgets/widgets.dart';
+import 'package:mitveepn/xboard/features/online_support/providers/chat_provider.dart';
+import 'package:mitveepn/xboard/features/online_support/services/service_config.dart';
+import 'package:mitveepn/xboard/features/shared/shared.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -35,23 +36,34 @@ class HomePage extends StatelessWidget {
             navigationItems: navigationItems,
             currentIndex: currentIndex,
           );
-          final bottomNavigationBar = viewMode == ViewMode.mobile ? navigationBar : null;
+          final bottomNavigationBar =
+              viewMode == ViewMode.mobile ? navigationBar : null;
           final sideNavigationBar =
               viewMode != ViewMode.mobile ? navigationBar : null;
           return CommonScaffold(
             key: globalState.homeScaffoldKey,
-            title: Intl.message(
-              pageLabel.name,
-            ),
+            title: _pageTitle(pageLabel),
             sideNavigationBar: sideNavigationBar,
             body: child!,
             bottomNavigationBar: bottomNavigationBar,
             leadingWidth: pageLabel == PageLabel.xboard ? 100 : null,
+            backgroundColor:
+                pageLabel == PageLabel.xboard ? const Color(0xFF0D1216) : null,
           );
         },
         child: _HomePageView(),
       ),
     );
+  }
+
+  String _pageTitle(PageLabel label) {
+    return switch (label) {
+      PageLabel.xboard => appLocalizations.xboardHome,
+      PageLabel.proxies => appLocalizations.proxies,
+      PageLabel.tools => appLocalizations.settings,
+      PageLabel.profiles => appLocalizations.profiles,
+      _ => Intl.message(label.name),
+    };
   }
 }
 
@@ -169,8 +181,11 @@ class CommonNavigationBar extends ConsumerWidget {
   Widget _buildIconWithBadge(PageLabel label, Widget icon, WidgetRef ref) {
     // 只有联系客服页面需要显示未读标记
     if (label == PageLabel.onlineSupport) {
-      final chatState = ref.watch(chatProvider);
-      final unreadCount = chatState.unreadCount;
+      // Chưa có cấu hình API online support (ví dụ mất mạng lúc khởi động)
+      // thì không đọc chatProvider, tránh throw exception làm crash UI.
+      final unreadCount = CustomerSupportServiceConfig.apiBaseUrl != null
+          ? ref.watch(chatProvider).unreadCount
+          : 0;
 
       return BadgeIcon(
         icon: icon,
@@ -183,98 +198,186 @@ class CommonNavigationBar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, ref) {
     if (viewMode == ViewMode.mobile) {
+      // Filter out plans page from bottom navigation
+      final visibleItems = navigationItems
+          .where((item) => item.label != PageLabel.plans)
+          .toList();
+      final visibleIndex = visibleItems.indexWhere(
+        (item) => item.label == navigationItems[currentIndex].label,
+      );
+
       return NavigationBarTheme(
-        data: _NavigationBarDefaultsM3(context),
+        data: _NavigationBarDefaultsM3(
+          context,
+          dark: navigationItems[currentIndex].label == PageLabel.xboard,
+        ),
         child: NavigationBar(
-          destinations: navigationItems
+          destinations: visibleItems
               .map(
                 (e) => NavigationDestination(
                   icon: _buildIconWithBadge(e.label, e.icon, ref),
-                  label: Intl.message(e.label.name),
+                  label: _navigationLabel(e.label),
                 ),
               )
               .toList(),
           onDestinationSelected: (index) {
-            globalState.appController.toPage(navigationItems[index].label);
+            globalState.appController.toPage(visibleItems[index].label);
           },
-          selectedIndex: currentIndex,
+          selectedIndex: visibleIndex == -1 ? 0 : visibleIndex,
         ),
       );
     }
-    final showLabel = ref.watch(appSettingProvider).showLabel;
+    return const _DesktopNavigationBar();
+  }
+}
+
+class _DesktopNavigationBar extends ConsumerWidget {
+  const _DesktopNavigationBar();
+
+  String _label(PageLabel label) {
+    return _navigationLabel(label);
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(homeStateProvider);
+    // Filter out plans page from desktop sidebar
+    final items = state.navigationItems
+        .where((item) =>
+            item.modes.contains(NavigationItemMode.desktop) &&
+            item.label != PageLabel.plans)
+        .toList();
+    final selected = items.indexWhere((item) => item.label == state.pageLabel);
     return Material(
-      color: context.colorScheme.surfaceContainer,
-      child: Column(
-        children: [
-          Expanded(
-            child: ScrollConfiguration(
-              behavior: HiddenBarScrollBehavior(),
-              child: SingleChildScrollView(
-                child: IntrinsicHeight(
-                  child: NavigationRail(
-                    backgroundColor: context.colorScheme.surfaceContainer,
-                    selectedIconTheme: IconThemeData(
-                      color: context.colorScheme.onSurfaceVariant,
-                    ),
-                    unselectedIconTheme: IconThemeData(
-                      color: context.colorScheme.onSurfaceVariant,
-                    ),
-                    selectedLabelTextStyle:
-                        context.textTheme.labelLarge!.copyWith(
-                      color: context.colorScheme.onSurface,
-                    ),
-                    unselectedLabelTextStyle:
-                        context.textTheme.labelLarge!.copyWith(
-                      color: context.colorScheme.onSurface,
-                    ),
-                    destinations: navigationItems
-                        .map(
-                          (e) => NavigationRailDestination(
-                            icon: _buildIconWithBadge(e.label, e.icon, ref),
-                            label: Text(
-                              Intl.message(e.label.name),
-                            ),
-                          ),
-                        )
-                        .toList(),
-                    onDestinationSelected: (index) {
-                      globalState.appController
-                          .toPage(navigationItems[index].label);
-                    },
-                    extended: false,
-                    selectedIndex: currentIndex,
-                    labelType: showLabel
-                        ? NavigationRailLabelType.all
-                        : NavigationRailLabelType.none,
-                  ),
-                ),
-              ),
+      color: const Color(0xFF1A2027),
+      child: SizedBox(
+        width: 100,
+        child: SafeArea(
+          bottom: false,
+          child: ListView.separated(
+            padding: const EdgeInsets.fromLTRB(10, 32, 10, 20),
+            itemCount: items.length,
+            separatorBuilder: (_, index) => SizedBox(
+              height: index == 0 ? 8 : 12,
             ),
-          ),
-          const SizedBox(
-            height: 16,
-          ),
-          IconButton(
-            onPressed: () {
-              ref.read(appSettingProvider.notifier).updateState(
-                    (state) => state.copyWith(
-                      showLabel: !state.showLabel,
-                    ),
-                  );
+            itemBuilder: (context, index) {
+              final item = items[index];
+              final isSelected = index == selected;
+              return _DesktopNavigationItem(
+                item: item,
+                isSelected: isSelected,
+                label: _label(item.label),
+              );
             },
-            icon: const Icon(Icons.menu),
           ),
-          const SizedBox(
-            height: 16,
-          ),
-        ],
+        ),
       ),
     );
   }
 }
 
+class _DesktopNavigationItem extends StatefulWidget {
+  final NavigationItem item;
+  final bool isSelected;
+  final String label;
+
+  const _DesktopNavigationItem({
+    required this.item,
+    required this.isSelected,
+    required this.label,
+  });
+
+  @override
+  State<_DesktopNavigationItem> createState() => _DesktopNavigationItemState();
+}
+
+class _DesktopNavigationItemState extends State<_DesktopNavigationItem> {
+  bool _isHovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final showBackground = widget.isSelected || _isHovered;
+    final icon = IconTheme(
+      data: IconThemeData(
+        size: 24,
+        color: widget.isSelected
+            ? const Color(0xFFD8F0FF)
+            : const Color(0xFFC4CFD9),
+      ),
+      child: widget.item.icon,
+    );
+
+    return Semantics(
+      button: true,
+      selected: widget.isSelected,
+      label: widget.label,
+      child: MouseRegion(
+        onEnter: (_) => setState(() => _isHovered = true),
+        onExit: (_) => setState(() => _isHovered = false),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () => globalState.appController.toPage(widget.item.label),
+            borderRadius: BorderRadius.circular(16),
+            splashColor: Colors.transparent,
+            highlightColor: Colors.transparent,
+            hoverColor: Colors.transparent,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 6),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 180),
+                    height: 48,
+                    width: 48,
+                    decoration: BoxDecoration(
+                      color: showBackground
+                          ? const Color(0xFF24577C)
+                          : Colors.transparent,
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Center(
+                      child: widget.item.label == PageLabel.onlineSupport
+                          ? BadgeIcon(icon: icon)
+                          : icon,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    widget.label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: widget.isSelected
+                          ? const Color(0xFFF0F6FA)
+                          : const Color(0xFFD1D9E0),
+                      fontSize: 13,
+                      fontWeight: widget.isSelected ? FontWeight.w600 : FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+String _navigationLabel(PageLabel label) {
+  return switch (label) {
+    PageLabel.xboard => appLocalizations.xboardHome,
+    PageLabel.proxies => appLocalizations.proxies,
+    PageLabel.tools => appLocalizations.settings,
+    PageLabel.profiles => appLocalizations.profiles,
+    _ => Intl.message(label.name),
+  };
+}
+
 class _NavigationBarDefaultsM3 extends NavigationBarThemeData {
-  _NavigationBarDefaultsM3(this.context)
+  _NavigationBarDefaultsM3(this.context, {required this.dark})
       : super(
           height: 60.0,
           elevation: 3.0,
@@ -282,11 +385,13 @@ class _NavigationBarDefaultsM3 extends NavigationBarThemeData {
         );
 
   final BuildContext context;
+  final bool dark;
   late final ColorScheme _colors = Theme.of(context).colorScheme;
   late final TextTheme _textTheme = Theme.of(context).textTheme;
 
   @override
-  Color? get backgroundColor => _colors.surfaceContainer;
+  Color? get backgroundColor =>
+      dark ? const Color(0xFF171D21) : _colors.surfaceContainer;
 
   @override
   Color? get shadowColor => Colors.transparent;
@@ -302,14 +407,15 @@ class _NavigationBarDefaultsM3 extends NavigationBarThemeData {
         color: states.contains(WidgetState.disabled)
             ? _colors.onSurfaceVariant.opacity38
             : states.contains(WidgetState.selected)
-                ? _colors.onSecondaryContainer
-                : _colors.onSurfaceVariant,
+                ? (dark ? const Color(0xFFF0F6FA) : _colors.onSecondaryContainer)
+                : (dark ? const Color(0xFFC4CFD9) : _colors.onSurfaceVariant),
       );
     });
   }
 
   @override
-  Color? get indicatorColor => _colors.secondaryContainer;
+  Color? get indicatorColor =>
+      dark ? const Color(0xFF24577C) : _colors.secondaryContainer;
 
   @override
   ShapeBorder? get indicatorShape => const StadiumBorder();
@@ -323,8 +429,10 @@ class _NavigationBarDefaultsM3 extends NavigationBarThemeData {
           color: states.contains(WidgetState.disabled)
               ? _colors.onSurfaceVariant.opacity38
               : states.contains(WidgetState.selected)
-                  ? _colors.onSurface
-                  : _colors.onSurfaceVariant);
+                  ? (dark ? const Color(0xFFF0F6FA) : _colors.onSurface)
+                  : (dark
+                      ? const Color(0xFFC4CFD9)
+                      : _colors.onSurfaceVariant));
     });
   }
 }

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/xboard/features/online_support/models/message_model.dart';
-import 'package:fl_clash/xboard/features/online_support/providers/chat_provider.dart';
-import 'package:fl_clash/xboard/features/online_support/services/websocket_service.dart';
-import 'package:fl_clash/xboard/features/online_support/widgets/chat_message_widget.dart';
-import 'package:fl_clash/xboard/features/online_support/widgets/image_picker_widget.dart';
+import 'package:mitveepn/common/common.dart';
+import 'package:mitveepn/xboard/features/online_support/models/message_model.dart';
+import 'package:mitveepn/xboard/features/online_support/providers/chat_provider.dart';
+import 'package:mitveepn/xboard/features/online_support/services/websocket_service.dart';
+import 'package:mitveepn/xboard/features/online_support/widgets/chat_message_widget.dart';
+import 'package:mitveepn/xboard/features/online_support/widgets/image_picker_widget.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class OnlineSupportPage extends ConsumerStatefulWidget {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:fl_clash/xboard/features/online_support/models/message_model.dart';
-import 'package:fl_clash/xboard/features/online_support/widgets/message_attachment_widget.dart';
+import 'package:mitveepn/xboard/features/online_support/models/message_model.dart';
+import 'package:mitveepn/xboard/features/online_support/widgets/message_attachment_widget.dart';
 import 'package:intl/intl.dart';
 
 class ChatMessageWidget extends StatefulWidget {

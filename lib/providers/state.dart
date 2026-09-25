@@ -1,8 +1,8 @@
 import 'package:dynamic_color/dynamic_color.dart';
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/models/models.dart';
-import 'package:fl_clash/state.dart';
+import 'package:mitveepn/common/common.dart';
+import 'package:mitveepn/enum/enum.dart';
+import 'package:mitveepn/models/models.dart';
+import 'package:mitveepn/state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -76,9 +76,9 @@ NavigationItemsState navigationsState(Ref ref) {
 
 @riverpod
 NavigationItemsState currentNavigationsState(Ref ref) {
-  final viewWidth = ref.watch(viewWidthProvider);
+  final viewMode = ref.watch(viewModeProvider);
   final navigationItemsState = ref.watch(navigationsStateProvider);
-  final navigationItemMode = switch (viewWidth <= maxMobileWidth) {
+  final navigationItemMode = switch (viewMode == ViewMode.mobile) {
     true => NavigationItemMode.mobile,
     false => NavigationItemMode.desktop,
   };

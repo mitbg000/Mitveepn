@@ -1,4 +1,4 @@
-import 'package:fl_clash/common/common.dart';
+import 'package:mitveepn/common/common.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 

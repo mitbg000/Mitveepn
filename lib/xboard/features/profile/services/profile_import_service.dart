@@ -1,16 +1,16 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/models/models.dart';
-import 'package:fl_clash/state.dart';
-import 'package:fl_clash/providers/providers.dart';
-import 'package:fl_clash/xboard/features/profile/profile.dart';
-import 'package:fl_clash/xboard/features/subscription/services/encrypted_subscription_service.dart';
-import 'package:fl_clash/xboard/features/subscription/utils/utils.dart';
-import 'package:fl_clash/xboard/features/profile/services/profile_subscription_info_service.dart';
-import 'package:fl_clash/xboard/core/core.dart';
-import 'package:fl_clash/xboard/config/utils/config_file_loader.dart';
+import 'package:mitveepn/enum/enum.dart';
+import 'package:mitveepn/models/models.dart';
+import 'package:mitveepn/state.dart';
+import 'package:mitveepn/providers/providers.dart';
+import 'package:mitveepn/xboard/features/profile/profile.dart';
+import 'package:mitveepn/xboard/features/subscription/services/encrypted_subscription_service.dart';
+import 'package:mitveepn/xboard/features/subscription/utils/utils.dart';
+import 'package:mitveepn/xboard/features/profile/services/profile_subscription_info_service.dart';
+import 'package:mitveepn/xboard/core/core.dart';
+import 'package:mitveepn/xboard/config/utils/config_file_loader.dart';
 final xboardProfileImportServiceProvider = Provider<XBoardProfileImportService>((ref) {
   return XBoardProfileImportService(ref);
 });
@@ -134,7 +134,7 @@ class XBoardProfileImportService {
       
       // 使用标准方式下载
       ProfileLogger.info('📄 使用标准方式下载普通订阅');
-      final profile = await Profile.normal(url: url).update().timeout(
+      final profile = await Profile.normal(url: url, label: 'XBoard Subscription').update().timeout(
         downloadTimeout,
         onTimeout: () {
           throw TimeoutException('下载超时', downloadTimeout);
@@ -237,7 +237,7 @@ class XBoardProfileImportService {
 
       // 创建Profile并保存解密的配置内容
       ProfileLogger.debug('💾 开始保存解密的配置内容到Profile...');
-      final profile = Profile.normal(url: url);
+      final profile = Profile.normal(url: url, label: 'XBoard Subscription');
       final profileWithContent = await profile.saveFileWithString(result.content!);
       ProfileLogger.info('✅ 配置内容已成功保存并通过ClashMeta核心验证');
       

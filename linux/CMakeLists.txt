@@ -4,10 +4,10 @@ project(runner LANGUAGES CXX)
 
 # The name of the executable created for the application. Change this to change
 # the on-disk name of your application.
-set(BINARY_NAME "Flclash")
+set(BINARY_NAME "Mitveepn")
 # The unique GTK application identifier for this application. See:
 # https://wiki.gnome.org/HowDoI/ChooseApplicationID
-set(APPLICATION_ID "com.follow.clash")
+set(APPLICATION_ID "com.mitveepn.app")
 
 # Explicitly opt in to modern CMake behaviors to avoid warnings with recent
 # versions of CMake.
@@ -119,7 +119,7 @@ install(FILES "${FLUTTER_LIBRARY}" DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
 
 # libclash.so
 set(CLASH_DIR "../libclash/linux")
-install(PROGRAMS "${CLASH_DIR}/FlClashCore" DESTINATION "${BUILD_BUNDLE_DIR}"
+install(PROGRAMS "${CLASH_DIR}/MitveepnCore" DESTINATION "${BUILD_BUNDLE_DIR}"
   COMPONENT Runtime)
 
 foreach(bundled_library ${PLUGIN_BUNDLED_LIBRARIES})

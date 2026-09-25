@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/xboard/features/auth/providers/xboard_user_provider.dart';
+import 'package:mitveepn/common/common.dart';
+import 'package:mitveepn/xboard/features/auth/providers/xboard_user_provider.dart';
 
 class LogoutDialog extends ConsumerWidget {
   const LogoutDialog({super.key});

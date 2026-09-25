@@ -1,14 +1,14 @@
-display_name: Flclash
+display_name: Mitveepn
 
 icon: ./assets/images/icon.png
 
 keywords:
-  - Flclash
+  - Mitveepn
   - Clash
   - ClashMeta
   - Proxy
 
-generic_name: Flclash
+generic_name: Mitveepn
 
 categories:
   - Network

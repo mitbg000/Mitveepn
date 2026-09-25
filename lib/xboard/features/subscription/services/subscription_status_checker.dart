@@ -1,12 +1,13 @@
-import 'package:fl_clash/xboard/features/auth/providers/xboard_user_provider.dart';
+import 'package:mitveepn/xboard/features/auth/providers/xboard_user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/providers/providers.dart';
+import 'package:mitveepn/common/common.dart';
+import 'package:mitveepn/enum/enum.dart';
+import 'package:mitveepn/providers/providers.dart';
+import 'package:mitveepn/state.dart';
 
-import 'package:fl_clash/xboard/features/subscription/widgets/subscription_status_dialog.dart';
-import 'package:fl_clash/xboard/features/payment/pages/plans.dart';
-import 'package:fl_clash/xboard/features/profile/providers/profile_import_provider.dart';
+import 'package:mitveepn/xboard/features/subscription/widgets/subscription_status_dialog.dart';
+import 'package:mitveepn/xboard/features/profile/providers/profile_import_provider.dart';
 
 import 'subscription_status_service.dart';
 class SubscriptionStatusChecker {
@@ -40,7 +41,10 @@ class SubscriptionStatusChecker {
         return;
       }
       commonPrint.log('[SubscriptionStatusChecker] 用户已登录，开始获取订阅状态...');
-      await userNotifier.refreshSubscriptionInfo();
+      // reimportProfile: false — chỉ lấy thông tin subscription (dung
+      // lượng/hạn dùng) để hiển thị, không xóa và tải lại profile đã có
+      // mỗi lần mở app.
+      await userNotifier.refreshSubscriptionInfo(reimportProfile: false);
       await Future.delayed(const Duration(milliseconds: 500));
       if (!context.mounted) return;
       final updatedUserState = ref.read(xboardUserProvider);
@@ -58,8 +62,10 @@ class SubscriptionStatusChecker {
           statusResult,
         );
       } else {
-        if (statusResult.type == SubscriptionStatusType.valid && 
-            updatedUserState.subscriptionInfo?.subscribeUrl?.isNotEmpty == true) {
+        // Đã có profile sẵn trên máy thì dùng lại, không cần tải lại mỗi lần vào Home
+        if (statusResult.type == SubscriptionStatusType.valid &&
+            updatedUserState.subscriptionInfo?.subscribeUrl?.isNotEmpty == true &&
+            globalState.config.profiles.isEmpty) {
           commonPrint.log('[SubscriptionStatusChecker] 订阅状态正常，开始导入配置...');
           ref.read(profileImportProvider.notifier).importSubscription(
             updatedUserState.subscriptionInfo!.subscribeUrl!
@@ -83,11 +89,7 @@ class SubscriptionStatusChecker {
       context,
       statusResult,
       onPurchase: () {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => const PlansView(),
-          ),
-        );
+        globalState.appController.toPage(PageLabel.plans);
       },
       onRefresh: () async {
         commonPrint.log('[SubscriptionStatusChecker] 刷新订阅状态...');

@@ -6,8 +6,8 @@ plugins {
 }
 
 android {
-    namespace = "com.follow.clash.core"
-    compileSdk = 35
+    namespace = "com.mitveepn.app.core"
+    compileSdk = 36
     ndkVersion = "28.0.13004108"
 
     defaultConfig {
@@ -50,11 +50,16 @@ dependencies {
     implementation("androidx.annotation:annotation-jvm:1.9.1")
 }
 
+// Chỉ copy đè khi có nguồn native lib mới build (../../libclash/android).
+// Nếu không tồn tại, giữ nguyên libclash.so đã có sẵn trong src/main/jniLibs
+// (tránh xoá mất core thật rồi build ra app không có VPN core, gây crash khi Connect).
+val nativeLibsSourceDir = file("../../libclash/android")
 val copyNativeLibs by tasks.register<Copy>("copyNativeLibs") {
+    onlyIf { nativeLibsSourceDir.exists() && nativeLibsSourceDir.listFiles()?.isNotEmpty() == true }
     doFirst {
         delete("src/main/jniLibs")
     }
-    from("../../libclash/android")
+    from(nativeLibsSourceDir)
     into("src/main/jniLibs")
 }
 

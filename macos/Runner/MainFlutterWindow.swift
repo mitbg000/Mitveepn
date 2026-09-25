@@ -9,7 +9,12 @@ class MainFlutterWindow: NSWindow {
         let windowFrame = self.frame
         self.contentViewController = flutterViewController
         self.setFrame(windowFrame, display: true)
-        
+
+        // Hide title bar but keep traffic lights
+        self.titlebarAppearsTransparent = true
+        self.titleVisibility = .hidden
+        self.styleMask.insert(.fullSizeContentView)
+
         FlutterMethodChannel(
             name: "launch_at_startup", binaryMessenger: flutterViewController.engine.binaryMessenger
         )
@@ -26,7 +31,7 @@ class MainFlutterWindow: NSWindow {
                 result(FlutterMethodNotImplemented)
             }
         }
-        
+
         RegisterGeneratedPlugins(registry: flutterViewController)
         super.awakeFromNib()
     }

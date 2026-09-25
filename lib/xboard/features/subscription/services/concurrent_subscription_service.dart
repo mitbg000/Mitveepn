@@ -1,13 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'package:fl_clash/xboard/config/xboard_config.dart';
-import 'package:fl_clash/xboard/config/utils/config_file_loader.dart';
-import 'package:fl_clash/xboard/sdk/xboard_sdk.dart';
+import 'package:mitveepn/xboard/config/xboard_config.dart';
+import 'package:mitveepn/xboard/config/utils/config_file_loader.dart';
+import 'package:mitveepn/xboard/sdk/xboard_sdk.dart';
 // 已从core/utils导出
-import 'package:fl_clash/xboard/core/core.dart';
-import 'package:fl_clash/xboard/infrastructure/infrastructure.dart';
-import 'package:fl_clash/xboard/infrastructure/http/user_agent_config.dart';
+import 'package:mitveepn/xboard/core/core.dart';
+import 'package:mitveepn/xboard/infrastructure/infrastructure.dart';
+import 'package:mitveepn/xboard/infrastructure/http/user_agent_config.dart';
 import 'encrypted_subscription_service.dart';
 
 /// 并发竞速订阅获取服务

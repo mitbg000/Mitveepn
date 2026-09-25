@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:math';
-import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/models/models.dart';
-import 'package:fl_clash/providers/providers.dart';
-import 'package:fl_clash/views/proxies/common.dart' as proxies_common;
+import 'package:mitveepn/enum/enum.dart';
+import 'package:mitveepn/models/models.dart';
+import 'package:mitveepn/providers/providers.dart';
+import 'package:mitveepn/views/proxies/common.dart' as proxies_common;
 // operation_coordinator已废弃，移除相关代码
-import 'package:fl_clash/xboard/core/core.dart';
+import 'package:mitveepn/xboard/core/core.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AutoLatencyService {

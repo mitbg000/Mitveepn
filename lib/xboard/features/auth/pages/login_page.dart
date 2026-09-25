@@ -1,14 +1,13 @@
 
-import 'package:fl_clash/xboard/services/services.dart';
-import 'package:fl_clash/xboard/features/auth/providers/xboard_user_provider.dart';
-import 'package:fl_clash/xboard/features/domain_status/domain_status.dart';
-import 'package:fl_clash/common/common.dart';
+import 'package:mitveepn/xboard/services/services.dart';
+import 'package:mitveepn/xboard/features/auth/providers/xboard_user_provider.dart';
+import 'package:mitveepn/xboard/features/domain_status/domain_status.dart';
+import 'package:mitveepn/common/common.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'register_page.dart';
-import 'forgot_password_page.dart';
-import 'package:fl_clash/xboard/features/shared/shared.dart';
-import 'package:fl_clash/xboard/config/utils/config_file_loader.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:mitveepn/xboard/features/shared/shared.dart';
+import 'package:mitveepn/xboard/config/utils/config_file_loader.dart';
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
   @override
@@ -129,17 +128,78 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     }
   }
   void _navigateToRegister() async {
-    await Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => const RegisterPage()),
-    );
-    _loadSavedCredentials();
-    _checkDomainStatus();
+    // Lấy domain hiện tại từ domain status provider
+    final currentDomain = ref.read(domainStatusProvider).currentDomain;
+
+    if (currentDomain == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(appLocalizations.domainNotReadyTryAgain)),
+        );
+      }
+      return;
+    }
+
+    // Xây dựng URL đăng ký
+    String registerUrl = currentDomain;
+
+    // Thêm https:// nếu chưa có protocol
+    if (!registerUrl.startsWith('http://') && !registerUrl.startsWith('https://')) {
+      registerUrl = 'https://$registerUrl';
+    }
+
+    // Thêm đuôi /#register
+    registerUrl = '$registerUrl/#register';
+
+    final uri = Uri.parse(registerUrl);
+
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(appLocalizations.cannotOpenLink(registerUrl))),
+        );
+      }
+    }
   }
   void _navigateToForgotPassword() async {
-    await Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => const ForgotPasswordPage()),
-    );
-    _checkDomainStatus();
+    // Lấy domain hiện tại từ domain status provider
+    final currentDomain = ref.read(domainStatusProvider).currentDomain;
+
+    if (currentDomain == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(appLocalizations.domainNotReadyTryAgain)),
+        );
+      }
+      return;
+    }
+
+    // Xây dựng URL quên mật khẩu
+    String forgotPasswordUrl = currentDomain;
+
+    // Thêm https:// nếu chưa có protocol
+    if (!forgotPasswordUrl.startsWith('http://') && !forgotPasswordUrl.startsWith('https://')) {
+      forgotPasswordUrl = 'https://$forgotPasswordUrl';
+    }
+
+    // Thêm đuôi /#forgot-password
+    forgotPasswordUrl = '$forgotPasswordUrl/#forgot-password';
+
+    final uri = Uri.parse(forgotPasswordUrl);
+
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(appLocalizations.cannotOpenLink(forgotPasswordUrl)),
+          ),
+        );
+      }
+    }
   }
     @override
     Widget build(BuildContext context) {
@@ -196,10 +256,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                 shape: BoxShape.circle,
                                 color: colorScheme.primary.withValues(alpha: 0.1),
                               ),
-                              child: Icon(
-                                Icons.vpn_key_outlined,
-                                size: 48,
-                                color: colorScheme.primary,
+                              child: Image.asset(
+                                'assets/images/icon.png',
+                                width: 48,
+                                height: 48,
                               ),
                             ),
                             const SizedBox(height: 24),

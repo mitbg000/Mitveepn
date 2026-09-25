@@ -1,9 +1,9 @@
-import 'package:fl_clash/xboard/core/core.dart';
-import 'package:fl_clash/xboard/infrastructure/infrastructure.dart';
+import 'package:mitveepn/xboard/core/core.dart';
+import 'package:mitveepn/xboard/infrastructure/infrastructure.dart';
 import 'package:flutter/material.dart';
-import 'package:fl_clash/xboard/features/online_support/models/message_model.dart';
+import 'package:mitveepn/xboard/features/online_support/models/message_model.dart';
 
-import 'package:fl_clash/xboard/features/online_support/services/service_config.dart';
+import 'package:mitveepn/xboard/features/online_support/services/service_config.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:typed_data';
 import 'package:http/http.dart' as http;

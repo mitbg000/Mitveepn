@@ -1,11 +1,11 @@
 import 'dart:math' as math;
 
-import 'package:fl_clash/xboard/core/core.dart';
+import 'package:mitveepn/xboard/core/core.dart';
 import 'package:flutter/material.dart';
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/xboard/features/online_support/models/message_model.dart';
-import 'package:fl_clash/xboard/features/online_support/services/file_upload_service.dart';
-import 'package:fl_clash/xboard/features/online_support/services/service_config.dart';
+import 'package:mitveepn/common/common.dart';
+import 'package:mitveepn/xboard/features/online_support/models/message_model.dart';
+import 'package:mitveepn/xboard/features/online_support/services/file_upload_service.dart';
+import 'package:mitveepn/xboard/features/online_support/services/service_config.dart';
 import 'package:file_picker/file_picker.dart';
 
 /// 图片选择和预览组件
@@ -27,7 +27,7 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
   List<PlatformFile> _selectedFiles = [];
   bool _isUploading = false;
   String? _errorMessage;
-  late final FileUploadService _uploadService;
+  FileUploadService? _uploadService;
 
   @override
   void initState() {
@@ -35,7 +35,10 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
     // 使用正确的配置获取baseUrl
     final apiBaseUrl = CustomerSupportServiceConfig.apiBaseUrl;
     if (apiBaseUrl == null) {
-      throw Exception(appLocalizations.onlineSupportApiConfigNotFound);
+      // Mất mạng lúc khởi động, chưa lấy được config từ remote —
+      // hiện lỗi trong UI thay vì throw làm crash toàn bộ bottom sheet.
+      _errorMessage = appLocalizations.onlineSupportApiConfigNotFound;
+      return;
     }
     _uploadService = FileUploadService(
       baseUrl: apiBaseUrl,
@@ -45,12 +48,13 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
 
   @override
   void dispose() {
-    _uploadService.dispose();
+    _uploadService?.dispose();
     super.dispose();
   }
 
   /// 选择图片文件
   Future<void> _pickImages() async {
+    if (_uploadService == null) return;
     try {
       XBoardLogger.debug('开始选择图片文件...');
       
@@ -97,7 +101,7 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
 
   /// 上传选中的文件
   Future<void> _uploadFiles() async {
-    if (_selectedFiles.isEmpty) return;
+    if (_selectedFiles.isEmpty || _uploadService == null) return;
 
     setState(() {
       _isUploading = true;
@@ -109,7 +113,7 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
 
       for (final file in _selectedFiles) {
         if (file.bytes != null) {
-          final result = await _uploadService.uploadFile(
+          final result = await _uploadService!.uploadFile(
             fileBytes: file.bytes!,
             fileName: file.name,
             mimeType: _getMimeTypeFromExtension(file.extension),
@@ -226,7 +230,9 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
                   // 选择文件按钮
                   if (_selectedFiles.isEmpty) ...[
                     InkWell(
-                      onTap: _isUploading ? null : _pickImages,
+                      onTap: _isUploading || _uploadService == null
+                          ? null
+                          : _pickImages,
                       borderRadius: BorderRadius.circular(12),
                       child: Container(
                         height: 120,

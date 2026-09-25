@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/state.dart';
+import 'package:mitveepn/common/common.dart';
+import 'package:mitveepn/state.dart';
 import 'package:flutter/material.dart';
 import 'package:screen_retriever/screen_retriever.dart';
 import 'package:window_manager/window_manager.dart';
@@ -21,8 +21,10 @@ class Window {
     await windowManager.ensureInitialized();
     WindowOptions windowOptions = WindowOptions(
       size: Size(props.width, props.height),
-      minimumSize: Size(props.width, props.height), // 设置最小尺寸等于当前尺寸
-      maximumSize: Size(props.width, props.height), // 设置最大尺寸等于当前尺寸，禁用调整大小
+      // Allow desktop windows to reach a phone-like portrait layout. The
+      // responsive view mode moves navigation to the bottom at that size.
+      minimumSize: const Size(360, 640),
+      // maximumSize 已移除，允许用户自由调整到任意大小
     );
     if (!Platform.isMacOS || version > 10) {
       await windowManager.setTitleBarStyle(TitleBarStyle.hidden);
@@ -60,7 +62,7 @@ class Window {
     }
     await windowManager.waitUntilReadyToShow(windowOptions, () async {
       await windowManager.setPreventClose(true);
-      await windowManager.setResizable(false); // 禁用窗口缩放
+      await windowManager.setResizable(true); // 允许窗口缩放
     });
   }
 

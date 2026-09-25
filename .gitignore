@@ -61,3 +61,11 @@ app.*.map.json
 # 只忽略根目录的配置文件，assets/config/ 下的要提交
 /xboard.config.yaml
 /xboard.config.yml
+
+# Mitveepn specific ignores
+/config.json
+/assets/config/xboard.config.yaml
+!/config.example.json
+!/assets/config/xboard.config.example.yaml
+*.bak
+.claude/

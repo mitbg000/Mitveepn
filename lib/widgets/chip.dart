@@ -1,5 +1,5 @@
-import 'package:fl_clash/common/color.dart';
-import 'package:fl_clash/enum/enum.dart';
+import 'package:mitveepn/common/color.dart';
+import 'package:mitveepn/enum/enum.dart';
 import 'package:flutter/material.dart';
 
 class CommonChip extends StatelessWidget {

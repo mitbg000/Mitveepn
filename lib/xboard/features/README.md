@@ -23,7 +23,7 @@
 
 **使用示例**:
 ```dart
-import 'package:fl_clash/xboard/features/auth/auth.dart';
+import 'package:mitveepn/xboard/features/auth/auth.dart';
 
 // 导航到登录页面
 Navigator.push(context, MaterialPageRoute(
@@ -55,7 +55,7 @@ Navigator.push(context, MaterialPageRoute(
 
 **使用示例**:
 ```dart
-import 'package:fl_clash/xboard/features/subscription/subscription.dart';
+import 'package:mitveepn/xboard/features/subscription/subscription.dart';
 
 // 显示订阅页面
 Navigator.push(context, MaterialPageRoute(
@@ -88,7 +88,7 @@ Navigator.push(context, MaterialPageRoute(
 
 **使用示例**:
 ```dart
-import 'package:fl_clash/xboard/features/payment/payment.dart';
+import 'package:mitveepn/xboard/features/payment/payment.dart';
 
 // 显示套餐列表
 Navigator.push(context, MaterialPageRoute(
@@ -134,7 +134,7 @@ Navigator.push(context, MaterialPageRoute(
 
 **使用示例**:
 ```dart
-import 'package:fl_clash/xboard/features/invite/invite.dart';
+import 'package:mitveepn/xboard/features/invite/invite.dart';
 
 // 显示邀请页面
 Navigator.push(context, MaterialPageRoute(
@@ -320,17 +320,17 @@ final sdk = XBoardClient.instance.sdk; // 不要这样
 
 ```dart
 // 导入整个模块
-import 'package:fl_clash/xboard/features/auth/auth.dart';
+import 'package:mitveepn/xboard/features/auth/auth.dart';
 
 // 或通过主入口导入
-import 'package:fl_clash/xboard/xboard.dart';
+import 'package:mitveepn/xboard/xboard.dart';
 ```
 
 ### 2. 页面导航
 
 ```dart
 // 使用页面导出
-import 'package:fl_clash/xboard/pages/pages.dart';
+import 'package:mitveepn/xboard/pages/pages.dart';
 
 Navigator.push(context, MaterialPageRoute(
   builder: (_) => const LoginPage(),
@@ -341,7 +341,7 @@ Navigator.push(context, MaterialPageRoute(
 
 ```dart
 // 使用 Provider 导出
-import 'package:fl_clash/xboard/providers/providers.dart';
+import 'package:mitveepn/xboard/providers/providers.dart';
 
 // 在 Widget 中使用
 final userInfo = ref.watch(userInfoNotifierProvider);
@@ -370,7 +370,7 @@ class SubscriptionNotifier extends _$SubscriptionNotifier {
 
 ```dart
 // 使用 shared 层的服务
-import 'package:fl_clash/xboard/shared/shared.dart';
+import 'package:mitveepn/xboard/shared/shared.dart';
 
 final storageService = StorageService.instance;
 await storageService.saveUserToken(token);

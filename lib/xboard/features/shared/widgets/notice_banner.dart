@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:fl_clash/xboard/features/notice/notice.dart';
+import 'package:mitveepn/xboard/features/notice/notice.dart';
 class NoticeBanner extends ConsumerStatefulWidget {
   const NoticeBanner({super.key});
   @override

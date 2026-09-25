@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:fl_clash/xboard/core/core.dart';
-import 'package:fl_clash/xboard/features/online_support/services/service_config.dart';
+import 'package:mitveepn/xboard/core/core.dart';
+import 'package:mitveepn/xboard/features/online_support/services/service_config.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 /// WebSocket连接状态枚举
@@ -129,8 +129,18 @@ class CustomerSupportWebSocketService {
 
       // 构建带有token的WebSocket URL
       // 不在URL中包含token，而是建立基本连接
-      final wsUrl = '$baseWsUrl/ws';
+      // baseWsUrl có thể đã chứa sẵn '/ws' (xem config.json), tránh nối thành '/ws/ws'.
+      final base = baseWsUrl.endsWith('/ws')
+          ? baseWsUrl.substring(0, baseWsUrl.length - 3)
+          : baseWsUrl;
+      final wsUrl = '$base/ws';
       _channel = WebSocketChannel.connect(Uri.parse(wsUrl));
+
+      // sink.done sẽ nhận lỗi handshake; không bắt ở đây thì thành
+      // unhandled exception vì onError của stream không phủ trường hợp này.
+      _channel!.sink.done.catchError((Object e) {
+        XBoardLogger.error('WebSocket sink đóng với lỗi', e);
+      });
 
       // 连接建立后，通过消息发送token进行认证
       _channel!.sink.add(jsonEncode({'type': 'auth', 'token': token}));
@@ -175,10 +185,23 @@ class CustomerSupportWebSocketService {
     }
   }
 
+  /// Số lần thử lại tối đa trước khi bỏ, và trần backoff.
+  static const int _maxReconnectAttempts = 5;
+  static const Duration _maxReconnectDelay = Duration(seconds: 60);
+
   void _reconnect() {
     if (_isDisposed || (_reconnectTimer?.isActive ?? false)) return;
 
-    final duration = Duration(seconds: 5 * (_reconnectAttempts + 1));
+    if (_reconnectAttempts >= _maxReconnectAttempts) {
+      XBoardLogger.warning(
+          'WebSocket đã thử lại $_reconnectAttempts lần không thành công, dừng thử lại');
+      return;
+    }
+
+    var duration = Duration(seconds: 5 * (_reconnectAttempts + 1));
+    if (duration > _maxReconnectDelay) {
+      duration = _maxReconnectDelay;
+    }
     _reconnectTimer = Timer(duration, () {
       XBoardLogger.info(
           '$_reconnectAttempts次尝试重连WebSocket...');

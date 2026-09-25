@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:fl_clash/common/common.dart';
+import 'package:mitveepn/common/common.dart';
+import 'package:mitveepn/widgets/widgets.dart';
+import 'package:mitveepn/state.dart';
 import '../models/domain_status_state.dart';
 import '../providers/domain_status_provider.dart';
+import 'login_add_profile_view.dart';
 
 /// 域名状态指示器组件
 class DomainStatusIndicator extends ConsumerWidget {
@@ -99,16 +102,60 @@ class DomainStatusIndicator extends ConsumerWidget {
 }
 
 /// 域名状态详情对话框
-class DomainStatusDialog extends ConsumerWidget {
+class DomainStatusDialog extends ConsumerStatefulWidget {
   const DomainStatusDialog({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<DomainStatusDialog> createState() => _DomainStatusDialogState();
+}
+
+class _DomainStatusDialogState extends ConsumerState<DomainStatusDialog> {
+
+  /// Xử lý thêm profile và chuyển vào app
+  void _handleAddProfileSuccess() {
+    debugPrint('[DomainStatusDialog] Profile added successfully! Navigating to home...');
+
+    // Sử dụng WidgetsBinding để đảm bảo navigation chạy sau frame hiện tại
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      try {
+        final navigator = globalState.navigatorKey.currentState;
+        if (navigator == null) {
+          debugPrint('[DomainStatusDialog] Navigator is null!');
+          return;
+        }
+
+        debugPrint('[DomainStatusDialog] Navigator found, navigating...');
+
+        // Đóng tất cả và navigate đến home
+        navigator.pushNamedAndRemoveUntil('/', (route) => false);
+
+        debugPrint('[DomainStatusDialog] Navigation command sent');
+
+        // Hiển thị thông báo
+        Future.delayed(const Duration(milliseconds: 800), () {
+          if (navigator.context.mounted) {
+            ScaffoldMessenger.of(navigator.context).showSnackBar(
+              SnackBar(
+                content: Text(appLocalizations.profileAddedSuccessfully),
+                duration: const Duration(seconds: 2),
+              ),
+            );
+          }
+        });
+      } catch (e, stackTrace) {
+        debugPrint('[DomainStatusDialog] Navigation error: $e');
+        debugPrint('[DomainStatusDialog] Stack trace: $stackTrace');
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final domainStatus = ref.watch(domainStatusProvider);
     final domainNotifier = ref.read(domainStatusProvider.notifier);
 
     return AlertDialog(
-      title: const Text('域名状态'),
+      title: Text(appLocalizations.domainStatusTitle),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -117,7 +164,7 @@ class DomainStatusDialog extends ConsumerWidget {
           _buildInfoRow(
             context,
             Icons.dns,
-            '当前状态',
+            appLocalizations.status,
             _getStatusText(domainStatus.status),
           ),
           
@@ -126,7 +173,7 @@ class DomainStatusDialog extends ConsumerWidget {
             _buildInfoRow(
               context,
               Icons.language,
-              '当前域名',
+              appLocalizations.domain,
               domainStatus.currentDomain!,
             ),
           
@@ -135,7 +182,7 @@ class DomainStatusDialog extends ConsumerWidget {
             _buildInfoRow(
               context,
               Icons.speed,
-              '延迟',
+              appLocalizations.delay,
               '${domainStatus.latency}ms',
             ),
           
@@ -144,7 +191,7 @@ class DomainStatusDialog extends ConsumerWidget {
             _buildInfoRow(
               context,
               Icons.access_time,
-              '最后检查',
+              appLocalizations.lastChecked,
               _formatDateTime(domainStatus.lastChecked!),
             ),
           
@@ -153,7 +200,7 @@ class DomainStatusDialog extends ConsumerWidget {
             _buildInfoRow(
               context,
               Icons.error_outline,
-              '错误信息',
+              appLocalizations.errorMessage,
               domainStatus.errorMessage!,
               isError: true,
             ),
@@ -163,18 +210,38 @@ class DomainStatusDialog extends ConsumerWidget {
             _buildInfoRow(
               context,
               Icons.list,
-              '可用域名数量',
+              appLocalizations.availableDomains,
               '${domainStatus.availableDomains.length}',
             ),
         ],
       ),
       actions: [
         TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+            // Mở trang add profile (subscription) với callback
+            showExtend(
+              context,
+              builder: (_, type) {
+                return AdaptiveSheetScaffold(
+                  type: type,
+                  body: LoginAddProfileView(
+                    parentContext: context,
+                    onProfileAdded: _handleAddProfileSuccess,
+                  ),
+                  title: appLocalizations.addSubscription,
+                );
+              },
+            );
+          },
+          child: Text(appLocalizations.addSubscription),
+        ),
+        TextButton(
           onPressed: () async {
             Navigator.of(context).pop();
             await domainNotifier.refresh();
           },
-          child: const Text('刷新'),
+          child: Text(appLocalizations.refresh),
         ),
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
@@ -239,11 +306,11 @@ class DomainStatusDialog extends ConsumerWidget {
     final difference = now.difference(dateTime);
     
     if (difference.inMinutes < 1) {
-      return '刚刚';
+      return appLocalizations.just;
     } else if (difference.inMinutes < 60) {
-      return '${difference.inMinutes}分钟前';
+      return '${difference.inMinutes} ${appLocalizations.minutes}${appLocalizations.ago}';
     } else if (difference.inHours < 24) {
-      return '${difference.inHours}小时前';
+      return '${difference.inHours} ${appLocalizations.hours}${appLocalizations.ago}';
     } else {
       return '${dateTime.month}/${dateTime.day} ${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}';
     }

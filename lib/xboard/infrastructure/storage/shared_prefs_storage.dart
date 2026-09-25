@@ -2,7 +2,7 @@
 library;
 
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:fl_clash/xboard/core/core.dart';
+import 'package:mitveepn/xboard/core/core.dart';
 import 'storage_interface.dart';
 
 /// SharedPreferences 存储实现

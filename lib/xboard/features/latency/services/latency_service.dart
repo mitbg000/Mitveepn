@@ -1,7 +1,7 @@
-import 'package:fl_clash/clash/clash.dart';
-import 'package:fl_clash/models/models.dart';
+import 'package:mitveepn/clash/clash.dart';
+import 'package:mitveepn/models/models.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:fl_clash/xboard/xboard.dart';
+import 'package:mitveepn/xboard/xboard.dart';
 
 class LatencyService {
   LatencyService();

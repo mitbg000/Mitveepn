@@ -97,10 +97,11 @@ class ConfigFileLoader {
       name: json['name'] as String? ?? '',
       url: json['url'] as String? ?? '',
       headers: (json['headers'] as Map<String, dynamic>?)?.cast<String, String>(),
-      timeout: json['timeout_seconds'] != null 
+      timeout: json['timeout_seconds'] != null
           ? Duration(seconds: json['timeout_seconds'] as int)
           : null,
       encryptionKey: json['encryption_key'] as String?,
+      priority: json['priority'] as int? ?? 0,
     );
   }
   
@@ -275,7 +276,7 @@ extension ConfigFileLoaderHelper on ConfigFileLoader {
   }
   
   /// 获取混淆前缀字符串
-  /// 
+  ///
   /// 返回配置文件中的混淆前缀，如果未配置或配置为 null 则返回 null
   /// 用于 Caddy 反代等场景的响应反混淆
   /// SDK 会自动检测响应是否包含此前缀，有则反混淆，无则直接解析
@@ -283,16 +284,50 @@ extension ConfigFileLoaderHelper on ConfigFileLoader {
     try {
       final security = await getSecurityConfig();
       final prefix = security['obfuscation_prefix'];
-      
+
       // 如果配置为空字符串或 null，返回 null
       if (prefix == null || (prefix is String && prefix.isEmpty)) {
         return null;
       }
-      
+
       return prefix as String;
     } catch (e) {
       XBoardLogger.warning('获取混淆前缀失败: $e');
       return null;
+    }
+  }
+
+  /// 获取客服支持配置
+  static Future<Map<String, dynamic>> getCustomerSupportConfig() async {
+    try {
+      final config = await ConfigFileLoader.loadExtendedConfig();
+      return config['customer_support'] as Map<String, dynamic>? ?? {};
+    } catch (e) {
+      XBoardLogger.warning('获取客服支持配置失败: $e');
+      return {};
+    }
+  }
+
+  /// 获取 Crisp Website ID
+  static Future<String?> getCrispWebsiteId() async {
+    try {
+      final customerSupport = await ConfigFileLoaderHelper.getCustomerSupportConfig();
+      final crispId = customerSupport['crisp_website_id'] as String?;
+      return (crispId != null && crispId.isNotEmpty) ? crispId : null;
+    } catch (e) {
+      XBoardLogger.warning('获取 Crisp Website ID 失败: $e');
+      return null;
+    }
+  }
+
+  /// 检查客服支持是否启用
+  static Future<bool> isCustomerSupportEnabled() async {
+    try {
+      final customerSupport = await ConfigFileLoaderHelper.getCustomerSupportConfig();
+      return customerSupport['enabled'] as bool? ?? false;
+    } catch (e) {
+      XBoardLogger.warning('检查客服支持状态失败: $e');
+      return false;
     }
   }
 }

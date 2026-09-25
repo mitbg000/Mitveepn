@@ -1,5 +1,5 @@
-import 'package:fl_clash/plugins/app.dart';
-import 'package:fl_clash/providers/config.dart';
+import 'package:mitveepn/plugins/app.dart';
+import 'package:mitveepn/providers/config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

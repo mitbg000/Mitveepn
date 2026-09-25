@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:fl_clash/common/common.dart';
+import 'package:mitveepn/common/common.dart';
 import '../models/update_check_state.dart';
 class UpdateDialog extends ConsumerWidget {
   final UpdateCheckState state;

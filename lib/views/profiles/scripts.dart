@@ -1,15 +1,15 @@
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/models/models.dart';
-import 'package:fl_clash/pages/editor.dart';
-import 'package:fl_clash/providers/config.dart';
-import 'package:fl_clash/state.dart';
-import 'package:fl_clash/widgets/card.dart';
-import 'package:fl_clash/widgets/input.dart';
-import 'package:fl_clash/widgets/list.dart';
-import 'package:fl_clash/widgets/null_status.dart';
-import 'package:fl_clash/widgets/popup.dart';
-import 'package:fl_clash/widgets/scaffold.dart';
+import 'package:mitveepn/common/common.dart';
+import 'package:mitveepn/enum/enum.dart';
+import 'package:mitveepn/models/models.dart';
+import 'package:mitveepn/pages/editor.dart';
+import 'package:mitveepn/providers/config.dart';
+import 'package:mitveepn/state.dart';
+import 'package:mitveepn/widgets/card.dart';
+import 'package:mitveepn/widgets/input.dart';
+import 'package:mitveepn/widgets/list.dart';
+import 'package:mitveepn/widgets/null_status.dart';
+import 'package:mitveepn/widgets/popup.dart';
+import 'package:mitveepn/widgets/scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

@@ -32,9 +32,15 @@
   "domainStatusChecking": "检查中...",
   "domainStatusAvailable": "服务可用",
   "domainStatusUnavailable": "服务不可用",
+  "domainStatusTitle": "域名状态",
+  "domainNotReadyTryAgain": "域名未就绪，请稍后再试",
+  "lastChecked": "最后检查",
+  "errorMessage": "错误信息",
+  "availableDomains": "可用域名",
+  "addSubscription": "添加订阅",
+  "profileAddedSuccessfully": "配置添加成功",
   "en": "英语",
-  "ja": "日语",
-  "ru": "俄语",
+  "vi": "越南语",
   "zh_CN": "中文简体",
   "theme": "主题",
   "themeDesc": "设置深色模式，调整色彩",
@@ -279,7 +285,7 @@
   "nameserverPolicyDesc": "指定对应域名服务器策略",
   "proxyNameserver": "代理域名服务器",
   "proxyNameserverDesc": "用于解析代理节点的域名",
-  "fallback": "Fallback",
+  "fallback": "回退",
   "fallbackDesc": "一般情况下使用境外DNS",
   "fallbackFilter": "Fallback过滤",
   "geoipCode": "Geoip代码",
@@ -381,7 +387,6 @@
   "messageTestTip": "这是一条消息。",
   "crashTest": "崩溃测试",
   "clearData": "清除数据",
-  "zoom": "缩放",
   "textScale": "文本缩放",
   "internet": "互联网",
   "systemApp": "系统应用",
@@ -836,6 +841,14 @@
   "completeWithdrawal": "网页版提供更完整的提现功能和支付方式选择",
   "goToWeb": "前往网页",
   "cannotOpenBrowser": "无法打开浏览器，请手动访问网页版",
+  "cannotOpenLink": "无法打开链接: {url}",
+  "@cannotOpenLink": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
   "openWebFailed": "打开网页失败，请手动访问网页版",
   "cannotGetWebUrl": "无法获取网页地址，请联系客服",
   "transferToWallet": "划转到钱包",
@@ -1027,5 +1040,59 @@
   "contactSupport": "联系客服",
   "configurationError": "应用配置异常，请联系客服",
   "onlineSupportWebSocketConfigNotFound": "在线客服WebSocket配置未找到，请检查配置",
-  "newMessageFromSupport": "客服新消息"
+  "newMessageFromSupport": "客服新消息",
+  "xboardCreateOrder": "创建订单",
+  "xboardSelectAPlan": "选择套餐",
+  "xboardChange": "更换",
+  "xboardSelectPeriod": "选择周期",
+  "xboardEnterCouponCode": "输入优惠码",
+  "xboardApply": "应用",
+  "xboardOriginalPrice": "原价",
+  "xboardDiscount": "折扣",
+  "xboardAmountToPay": "应付金额",
+  "xboardSelectPaymentMethod": "选择支付方式",
+  "xboardPerMonth": "/ 月",
+  "xboardMbps": "Mbps",
+  "xboardDevices": "设备",
+  "xboardUnlimited": "无限制",
+  "xboardProcessing": "处理中...",
+  "xboardPlanNotFound": "未找到套餐",
+  "xboardNoPaymentMethods": "暂无可用的支付方式",
+  "xboardPaymentFailed": "支付失败: 未获取到支付链接",
+  "xboardCannotOpenPaymentLink": "无法打开支付链接",
+  "xboardCannotLaunchBrowser": "无法启动外部浏览器",
+  "xboardOpenPaymentPageFailed": "打开支付页面失败: {error}",
+  "@xboardOpenPaymentPageFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "xboardLoadFailed": "加载失败",
+  "xboardNoPlansAvailable": "暂无套餐信息",
+  "xboardCoreStatus": "核心状态",
+  "xboardConnected": "已连接",
+  "xboardConnect": "连接",
+  "xboardYes": "是",
+  "xboardNo": "否",
+  "xboardEnabled": "已启用",
+  "xboardDisabled": "已禁用",
+  "xboardNotifications": "通知",
+  "xboardCustomerSupportNotEnabled": "客服支持未启用",
+  "xboardLoadConfigFailed": "加载配置失败: {error}",
+  "@xboardLoadConfigFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "xboardDataUsage": "数据使用",
+  "xboardBuyPlan": "购买套餐",
+  "xboardTrafficTrend": "流量趋势",
+  "xboardBandwidthUsageHistory": "30天带宽使用历史",
+  "xboardRefreshSubscriptionInfo": "刷新订阅信息",
+  "xboardDisconnect": "断开连接",
+  "xboardHome": "首页"
 }

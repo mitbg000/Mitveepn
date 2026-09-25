@@ -5,13 +5,13 @@ import 'dart:isolate';
 import 'dart:typed_data';
 
 import 'package:archive/archive.dart';
-import 'package:fl_clash/clash/clash.dart';
-import 'package:fl_clash/common/archive.dart';
-import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/plugins/app.dart';
-import 'package:fl_clash/providers/providers.dart';
-import 'package:fl_clash/state.dart';
-import 'package:fl_clash/widgets/dialog.dart';
+import 'package:mitveepn/clash/clash.dart';
+import 'package:mitveepn/common/archive.dart';
+import 'package:mitveepn/enum/enum.dart';
+import 'package:mitveepn/plugins/app.dart';
+import 'package:mitveepn/providers/providers.dart';
+import 'package:mitveepn/state.dart';
+import 'package:mitveepn/widgets/dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart';
@@ -23,6 +23,11 @@ import 'views/profiles/override_profile.dart';
 
 class AppController {
   int? lastProfileModified;
+
+  // restartCore() gọi lại _setupClashConfig() → _requestAdmin(), nên nếu
+  // authorize không đổi được realTunEnable thì sẽ lặp vô hạn và bật UAC
+  // prompt mỗi vòng. Chỉ cho authorize một lần cho mỗi phiên chạy.
+  bool _authorizeAttempted = false;
 
   final BuildContext context;
   final WidgetRef _ref;
@@ -132,6 +137,13 @@ class AppController {
     _ref.read(profilesProvider.notifier).setProfile(profile);
     if (_ref.read(currentProfileIdProvider) != null) return;
     _ref.read(currentProfileIdProvider.notifier).value = profile.id;
+  }
+
+  Future<void> clearAllProfiles() async {
+    final profiles = List<Profile>.from(_ref.read(profilesProvider));
+    for (final profile in profiles) {
+      await deleteProfile(profile.id);
+    }
   }
 
   deleteProfile(String id) async {
@@ -274,16 +286,25 @@ class AppController {
   Future<Result<bool>> _requestAdmin(bool enableTun) async {
     final realTunEnable = _ref.read(realTunEnableProvider);
     if (enableTun != realTunEnable && realTunEnable == false) {
-      final code = await system.authorizeCore();
-      switch (code) {
-        case AuthorizeCode.success:
-          await restartCore();
-          return Result.error("");
-        case AuthorizeCode.none:
-          break;
-        case AuthorizeCode.error:
-          enableTun = false;
-          break;
+      if (_authorizeAttempted) {
+        // Đã thử authorize rồi mà vẫn vào đây nghĩa là service không lên được.
+        // Chạy tiếp với tun tắt thay vì bật lại UAC prompt.
+        commonPrint.log("authorize core đã thử trước đó, bỏ qua và tắt tun");
+        enableTun = false;
+      } else {
+        final code = await system.authorizeCore();
+        switch (code) {
+          case AuthorizeCode.success:
+            _authorizeAttempted = true;
+            await restartCore();
+            return Result.error("");
+          case AuthorizeCode.none:
+            break;
+          case AuthorizeCode.error:
+            _authorizeAttempted = true;
+            enableTun = false;
+            break;
+        }
       }
     }
     _ref.read(realTunEnableProvider.notifier).value = enableTun;
@@ -321,16 +342,20 @@ class AppController {
     }
   }
 
-  Future _applyProfile() async {
+  Future _applyProfile({bool silence = false}) async {
     await clashCore.requestGc();
-    await setupClashConfig();
+    if (silence) {
+      await _setupClashConfig();
+    } else {
+      await setupClashConfig();
+    }
     await updateGroups();
     await updateProviders();
   }
 
   Future applyProfile({bool silence = false}) async {
     if (silence) {
-      await _applyProfile();
+      await _applyProfile(silence: true);
     } else {
       final commonScaffoldState = globalState.homeScaffoldKey.currentState;
       if (commonScaffoldState?.mounted != true) return;
@@ -374,15 +399,21 @@ class AppController {
   }
 
   Future<void> updateGroups() async {
+    // Không ghi đè groupsProvider bằng list rỗng khi native core tạm thời
+    // chưa trả về dữ liệu (đang bận/đang reload) — tránh proxies list bị
+    // xóa rồi phải chờ lần refresh kế tiếp mới hiện lại.
     try {
-      _ref.read(groupsProvider.notifier).value = await retry(
+      final groups = await retry(
         task: () async {
           return await clashCore.getProxiesGroups();
         },
         retryIf: (res) => res.isEmpty,
       );
+      if (groups.isNotEmpty) {
+        _ref.read(groupsProvider.notifier).value = groups;
+      }
     } catch (_) {
-      _ref.read(groupsProvider.notifier).value = [];
+      // giữ nguyên groupsProvider hiện tại
     }
   }
 
@@ -463,8 +494,12 @@ class AppController {
 
   autoCheckUpdate() async {
     if (!_ref.read(appSettingProvider).autoCheckUpdate) return;
-    final res = await request.checkForUpdate();
-    checkUpdateResultHandle(data: res);
+    try {
+      final res = await request.checkForUpdate();
+      checkUpdateResultHandle(data: res);
+    } catch (e) {
+      commonPrint.log('自动检查更新失败（可能是网络问题）: $e');
+    }
   }
 
   checkUpdateResultHandle({
@@ -540,7 +575,7 @@ class AppController {
         globalState.getCoreState(),
       );
     }
-    await applyProfile();
+    await applyProfile(silence: true);
   }
 
   init() async {
@@ -553,7 +588,8 @@ class AppController {
     autoLaunch?.updateStatus(
       _ref.read(appSettingProvider).autoLaunch,
     );
-    autoUpdateProfiles();
+    // Không tự động tải lại subscription khi khởi động — profile đã thêm
+    // chỉ cập nhật khi người dùng bấm Update thủ công.
     autoCheckUpdate();
     if (!_ref.read(appSettingProvider).silentLaunch) {
       window?.show();
@@ -561,7 +597,7 @@ class AppController {
       window?.hide();
     }
     await _handlePreference();
-    await _handlerDisclaimer();
+    // Không tự động hiện popup Important Notice khi mới cài đặt.
     _ref.read(initProvider.notifier).value = true;
   }
 

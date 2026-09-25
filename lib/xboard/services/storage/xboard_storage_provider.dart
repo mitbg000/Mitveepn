@@ -2,8 +2,8 @@
 library;
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:fl_clash/xboard/infrastructure/infrastructure.dart';
-import 'package:fl_clash/xboard/core/core.dart';
+import 'package:mitveepn/xboard/infrastructure/infrastructure.dart';
+import 'package:mitveepn/xboard/core/core.dart';
 import 'xboard_storage_service.dart';
 
 /// Storage 接口 FutureProvider

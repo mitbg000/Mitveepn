@@ -1,4 +1,4 @@
-import 'package:fl_clash/common/utils.dart';
+import 'package:mitveepn/common/utils.dart';
 import 'package:flutter/material.dart';
 class LatencyIndicator extends StatelessWidget {
   final int? delayValue;

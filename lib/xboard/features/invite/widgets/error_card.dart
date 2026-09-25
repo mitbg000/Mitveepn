@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:fl_clash/xboard/features/invite/providers/invite_provider.dart';
+import 'package:mitveepn/xboard/features/invite/providers/invite_provider.dart';
 
 class ErrorCard extends ConsumerWidget {
   const ErrorCard({super.key});

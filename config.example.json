@@ -1,0 +1,55 @@
+{
+  "panels": {
+    "mitveepn": [
+      {
+        "url": "https://your-xboard-backend.com",
+        "description": "Main Panel"
+      },
+      {
+        "url": "https://backup-xboard-backend.com",
+        "description": "Backup Panel"
+      }
+    ]
+  },
+  "onlineSupport": [
+    {
+      "url": "https://support.your-domain.com",
+      "description": "Customer Support",
+      "apiBaseUrl": "https://support.your-domain.com/api",
+      "wsBaseUrl": "wss://support.your-domain.com/ws"
+    }
+  ],
+  "proxy": [
+    {
+      "url": "username:password@proxy.example.com:8080",
+      "description": "HTTP Proxy Server",
+      "protocol": "http"
+    }
+  ],
+  "ws": [
+    {
+      "url": "wss://ws.your-domain.com/ws/",
+      "description": "WebSocket Server"
+    }
+  ],
+  "update": [
+    {
+      "url": "https://api.github.com/repos/your-username/your-repo/releases/latest",
+      "description": "GitHub Update Server"
+    },
+    {
+      "url": "https://update.your-domain.com/api/check",
+      "description": "Custom Update Server"
+    }
+  ],
+  "subscription": [
+    {
+      "url": "https://sub1.your-domain.com",
+      "description": "Subscription Server 1"
+    },
+    {
+      "url": "https://sub2.your-domain.com",
+      "description": "Subscription Server 2"
+    }
+  ]
+}

@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:fl_clash/l10n/l10n.dart';
+import 'package:mitveepn/l10n/l10n.dart';
 import '../models/payment_step.dart';
-import 'package:fl_clash/xboard/sdk/xboard_sdk.dart';
-import 'package:fl_clash/xboard/core/core.dart';
+import 'package:mitveepn/xboard/sdk/xboard_sdk.dart';
+import 'package:mitveepn/xboard/core/core.dart';
 class PaymentWaitingOverlay extends StatefulWidget {
   final VoidCallback? onClose;
   final VoidCallback? onPaymentSuccess;

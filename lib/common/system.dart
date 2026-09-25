@@ -1,11 +1,11 @@
 import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/enum/enum.dart';
-import 'package:fl_clash/plugins/app.dart';
-import 'package:fl_clash/state.dart';
-import 'package:fl_clash/widgets/input.dart';
+import 'package:mitveepn/common/common.dart';
+import 'package:mitveepn/enum/enum.dart';
+import 'package:mitveepn/plugins/app.dart';
+import 'package:mitveepn/state.dart';
+import 'package:mitveepn/widgets/input.dart';
 import 'package:flutter/services.dart';
 
 class System {

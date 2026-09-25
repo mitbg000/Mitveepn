@@ -1,9 +1,9 @@
 import 'dart:convert';
 
-import 'package:fl_clash/xboard/core/core.dart';
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/xboard/features/online_support/models/message_model.dart';
-import 'package:fl_clash/xboard/features/online_support/services/service_config.dart';
+import 'package:mitveepn/xboard/core/core.dart';
+import 'package:mitveepn/common/common.dart';
+import 'package:mitveepn/xboard/features/online_support/models/message_model.dart';
+import 'package:mitveepn/xboard/features/online_support/services/service_config.dart';
 import 'package:http/http.dart' as http;
 
 /// 客服系统API服务类

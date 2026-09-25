@@ -1,4 +1,4 @@
-import 'package:fl_clash/models/models.dart';
+import 'package:mitveepn/models/models.dart';
 enum ImportStatus {
   idle,        // 空闲状态
   cleaning,    // 清理旧配置

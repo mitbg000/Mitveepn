@@ -1,8 +1,8 @@
-import 'package:fl_clash/xboard/sdk/xboard_sdk.dart';
+import 'package:mitveepn/xboard/sdk/xboard_sdk.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/xboard/features/auth/auth.dart';
-import 'package:fl_clash/xboard/features/auth/providers/xboard_user_provider.dart';
+import 'package:mitveepn/common/common.dart';
+import 'package:mitveepn/xboard/features/auth/auth.dart';
+import 'package:mitveepn/xboard/features/auth/providers/xboard_user_provider.dart';
 class XBoardSubscriptionNotifier extends Notifier<List<PlanData>> {
   @override
   List<PlanData> build() {

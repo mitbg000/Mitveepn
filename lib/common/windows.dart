@@ -2,8 +2,8 @@ import 'dart:ffi';
 import 'dart:io';
 
 import 'package:ffi/ffi.dart';
-import 'package:fl_clash/common/common.dart';
-import 'package:fl_clash/enum/enum.dart';
+import 'package:mitveepn/common/common.dart';
+import 'package:mitveepn/enum/enum.dart';
 import 'package:path/path.dart';
 
 class Windows {
@@ -55,7 +55,8 @@ class Windows {
 
     commonPrint.log("windows runas: $command $arguments resultCode:$result");
 
-    if (result < 42) {
+    // ShellExecuteW trả > 32 khi khởi chạy thành công (<= 32 là mã lỗi).
+    if (result <= 32) {
       return false;
     }
     return true;
@@ -123,12 +124,23 @@ class Windows {
     ].join(" ");
 
     final res = runas("cmd.exe", command);
+    if (!res) {
+      return false;
+    }
 
-    await Future.delayed(
-      Duration(milliseconds: 300),
-    );
+    // runas chỉ báo cmd.exe đã được khởi chạy, không phải service đã chạy.
+    // Chờ tới khi checkService xác nhận RUNNING, tránh caller tưởng thành công
+    // rồi gọi lại registerService và bật thêm một UAC prompt.
+    for (var i = 0; i < 20; i++) {
+      await Future.delayed(
+        Duration(milliseconds: 500),
+      );
+      if (await checkService() == WindowsHelperServiceStatus.running) {
+        return true;
+      }
+    }
 
-    return res;
+    return false;
   }
 
   Future<bool> registerTask(String appName) async {
